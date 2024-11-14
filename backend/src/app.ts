@@ -1,7 +1,9 @@
 import express, { Application } from "express";
 import mongoose from "mongoose";
 import exampleRouter from "./routes/exampleRoute";
+import userRouter from "./routes/userRoute";
 import dotenv from "dotenv";
+import cors from "cors";
 
 // Load environment variables
 dotenv.config();
@@ -11,7 +13,16 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/GHShop";
 
 app.use(express.json());
-app.use("/api", exampleRouter);
+app.use(
+  cors({
+    origin: process.env.ORIGIN_URL,
+    methods: "GET, PATCH, POST, DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  })
+);
+
+app.use("/api/user", userRouter);
 
 mongoose
   .connect(MONGO_URI as string)

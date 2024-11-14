@@ -86,14 +86,14 @@ const Signup = () => {
     }
 
     // Phone number validation regex
-    const phoneRegex = /^\+88\d{11}$/;
+    const phoneRegex = /^\+84\d{8,9}$/;
 
-    // if (!e.target.phone.value.match(phoneRegex)) {
-    //   alert(
-    //     "Phone number must start with +88 and have a total length of 14 digits."
-    //   );
-    //   return;
-    // }
+    if (!e.target.phone.value.match(phoneRegex)) {
+      alert(
+        "Phone number must start with +88 and have a total length of 14 digits."
+      );
+      return;
+    }
 
     formData.append("phone", e.target.phone.value);
     formData.append("password", e.target.password.value);

@@ -87,13 +87,13 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: [
         true,
-        "Please, provide your phone number, i.e.: +8801xxxxxxxxx",
+        "Please, provide your phone number, i.e.: +84xxxxxxxxx",
       ],
       validate: {
         validator: (value: string) =>
-          validator.isMobilePhone(value, "bn-BD", { strictMode: true }),
+          validator.isMobilePhone(value, "vi-VN", { strictMode: true }),
         message:
-          "Phone number {VALUE} is not valid. Please, retry like +8801xxxxxxxxx",
+          "Phone number {VALUE} is not valid. Please, retry like +84xxxxxxxxx",
       },
       unique: true,
     },
@@ -208,6 +208,7 @@ userSchema.pre("save", async function (next) {
 
     // encrypt password
     this.password = this.encryptedPassword(this.password);
+     console.log("Password encrypted successfully");
   } catch (error) {
     next(error as mongoose.CallbackError);
   }
