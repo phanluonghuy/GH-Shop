@@ -1,9 +1,11 @@
 import express, { Application } from "express";
 import mongoose from "mongoose";
-import exampleRouter from "./routes/exampleRoute";
-import userRouter from "./routes/userRoute";
 import dotenv from "dotenv";
 import cors from "cors";
+
+// routers
+import userRouter from "./routes/userRoute";
+import productRouter from "./routes/productRoute";
 
 // Load environment variables
 dotenv.config();
@@ -23,6 +25,7 @@ app.use(
 );
 
 app.use("/api/user", userRouter);
+app.use("/api/product", productRouter);
 
 mongoose
   .connect(MONGO_URI as string)

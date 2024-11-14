@@ -12,19 +12,19 @@ const authorize = (...roles: string[]) => {
   return (req: IRequest, res: Response, next: NextFunction) => {
     // Check if user role is available
     if (!req.user || !req.user.role) {
-      return res.status(403).json({
+      res.status(403).json({
         acknowledgement: false,
         message: "Forbidden",
         description: "You're not applicable to access this page and features",
       });
     }
 
-    // Catch & match the user role
-    const userRole = req.user.role;
+    let user: any = req.user;
+    const userRole = user.role;
 
     // Revoke access based on role
     if (!roles.includes(userRole)) {
-      return res.status(403).json({
+      res.status(403).json({
         acknowledgement: false,
         message: "Forbidden",
         description: "You're not applicable to access this page and features",
