@@ -4,6 +4,7 @@ import Product from "../models/productModel";
 import User from "../models/userModel";
 import remove from "../utils/removeUtil";
 import {Error} from "mongoose";
+import BrandModel from "../models/brandModel";
 
 interface CustomRequest extends Request {
     user?: any;

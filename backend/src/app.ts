@@ -1,10 +1,14 @@
 import express, { Application } from "express";
 import mongoose from "mongoose";
-import exampleRouter from "./routes/exampleRoute";
-import userRouter from "./routes/userRoute";
 import dotenv from "dotenv";
 import cors from "cors";
 import error from "./middleware/errorMiddleware";
+
+// routers
+import userRouter from "./routes/userRoute";
+import productRouter from "./routes/productRoute";
+import brandRouter from "./routes/brandRoute";
+
 // Load environment variables
 dotenv.config();
 
@@ -26,6 +30,8 @@ app.use(express.json());
 app.use(error);
 
 app.use("/api/user", userRouter);
+app.use("/api/product", productRouter);
+app.use("/api/brand", brandRouter);
 
 
 mongoose
