@@ -3,8 +3,6 @@ import Brand from "../models/brandModel";
 import Product from "../models/productModel";
 import User from "../models/userModel";
 import remove from "../utils/removeUtil";
-import {Error} from "mongoose";
-import BrandModel from "../models/brandModel";
 
 interface CustomRequest extends Request {
     user?: any;
@@ -13,14 +11,13 @@ interface CustomRequest extends Request {
 export const brandService = {
     addBrand: async (req: CustomRequest, res: Response): Promise<void> => {
         const { body, file } = req;
-        let myFile: any = file;
 
         const brand = new Brand({
             title: body.title,
             description: body.description,
             logo: {
-                url: myFile.path,
-                public_id: myFile.filename,
+                url: file?.path,
+                public_id: file?.filename,
             },
             keynotes: JSON.parse(body.keynotes),
             tags: JSON.parse(body.tags),
