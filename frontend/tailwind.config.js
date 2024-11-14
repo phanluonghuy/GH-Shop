@@ -1,9 +1,18 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+module.exports = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
   theme: {
-    extend: {},
+    extend: {
+      borderRadius: {
+        DEFAULT: "5px",
+        primary: "1.5rem",
+        secondary: "9999px",
+      },
+    },
   },
-  plugins: [],
-}
-
+  plugins: [require("@tailwindcss/forms"), require("tailwind-scrollbar-hide")],
+};
