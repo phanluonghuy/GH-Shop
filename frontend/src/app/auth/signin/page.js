@@ -34,7 +34,7 @@ const Signin = () => {
 
     if (data) {
       toast.success(data?.description, { id: "signin" });
-      localStorage.setItem("accessToken", data?.accessToken);
+      localStorage.setItem("accessToken", data?.token);
 
       // open new tab
       setTimeout(() => {

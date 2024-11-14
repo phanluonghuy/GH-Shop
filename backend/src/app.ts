@@ -1,13 +1,10 @@
 import express, { Application } from "express";
 import mongoose from "mongoose";
+import exampleRouter from "./routes/exampleRoute";
+import userRouter from "./routes/userRoute";
 import dotenv from "dotenv";
 import cors from "cors";
-
-// routers
-import userRouter from "./routes/userRoute";
-import productRouter from "./routes/productRoute";
-import brandRouter from "./routes/brandRoute";
-
+import error from "./middleware/errorMiddleware";
 // Load environment variables
 dotenv.config();
 
@@ -15,7 +12,7 @@ const app: Application = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/GHShop";
 
-app.use(express.json());
+
 app.use(
   cors({
     origin: process.env.ORIGIN_URL,
@@ -24,10 +21,12 @@ app.use(
     optionsSuccessStatus: 204,
   })
 );
+app.use(express.json());
+
+app.use(error);
 
 app.use("/api/user", userRouter);
-app.use("/api/product", productRouter);
-app.use("/api/brand", brandRouter);
+
 
 mongoose
   .connect(MONGO_URI as string)

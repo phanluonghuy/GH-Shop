@@ -20,7 +20,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
   params: async (_: any, file: Express.Multer.File) => {
     return {
-      folder: 'canim-template',
+      folder: 'ghshop',
       public_id: `${Date.now()}_${file.originalname
         .replace(/[^\w\s.-]/g, '')
         .replace(/\s+/g, '-')
