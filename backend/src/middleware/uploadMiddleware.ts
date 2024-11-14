@@ -4,6 +4,9 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer, { Multer } from 'multer';
 import path from 'path';
 import { Request, Response } from 'express';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 /* cloudinary config */
 cloudinary.v2.config({
@@ -17,7 +20,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
   params: async (_: any, file: Express.Multer.File) => {
     return {
-      folder: 'canim-template',
+      folder: 'ghshop',
       public_id: `${Date.now()}_${file.originalname
         .replace(/[^\w\s.-]/g, '')
         .replace(/\s+/g, '-')

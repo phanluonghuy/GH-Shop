@@ -213,7 +213,7 @@ const Signup = () => {
               type="tel"
               name="phone"
               id="phone"
-              placeholder="i.e. +8801906315901"
+              placeholder="i.e. +8467676767"
               className=""
               required
             />
