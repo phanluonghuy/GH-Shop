@@ -10,5 +10,55 @@ export const productController = {
         } finally {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
-    }
+    },
+
+    getProducts: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await productService.getProducts(res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
+    getProduct: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await productService.getProduct(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
+    updateProduct: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await productService.updateProduct(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
+    deleteProduct: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await productService.deleteProduct(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
+    getFilteredProducts: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await productService.getFilteredProducts(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
 }

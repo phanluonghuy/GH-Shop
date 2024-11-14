@@ -1,6 +1,8 @@
 /* external imports */
 import mongoose, { Document, Schema, model } from "mongoose";
 import validator from "validator";
+import Product from "./productModel";
+import User from "./userModel";
 
 /* create brand schema interface */
 interface IBrand extends Document {
@@ -56,7 +58,7 @@ const brandSchema = new Schema<IBrand>(
     products: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Product",
+        ref: Product,
       },
     ],
 
@@ -79,7 +81,7 @@ const brandSchema = new Schema<IBrand>(
     // for creator
     creator: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: User,
     },
 
     // for timestamps
@@ -112,7 +114,7 @@ brandSchema.pre<IBrand>("save", function (next) {
 });
 
 /* create brand model schema */
-const Brand = model<IBrand>("Brand", brandSchema);
+const Brand: any = model<IBrand>("Brand", brandSchema);
 
 /* export brand schema */
 export default Brand;
