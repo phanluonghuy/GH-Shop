@@ -17,9 +17,4 @@ productRouter.post('/add-product', verify, authorize("admin", "seller"), upload.
     {name: "gallery", maxCount: 5},
 ]), productController.addProduct)
 
-productRouter.get('/add-product', (req, res) => {
-    res.json({code: 0, message: 'add product GET'})
-})
-
-
 export default productRouter;

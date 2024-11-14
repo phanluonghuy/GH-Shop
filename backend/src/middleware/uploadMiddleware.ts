@@ -4,6 +4,9 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer, { Multer } from 'multer';
 import path from 'path';
 import { Request, Response } from 'express';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 /* cloudinary config */
 cloudinary.v2.config({

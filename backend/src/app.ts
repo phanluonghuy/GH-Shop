@@ -6,6 +6,7 @@ import cors from "cors";
 // routers
 import userRouter from "./routes/userRoute";
 import productRouter from "./routes/productRoute";
+import brandRouter from "./routes/brandRoute";
 
 // Load environment variables
 dotenv.config();
@@ -26,6 +27,7 @@ app.use(
 
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
+app.use("/api/brand", brandRouter);
 
 mongoose
   .connect(MONGO_URI as string)
