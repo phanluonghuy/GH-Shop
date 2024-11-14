@@ -8,8 +8,8 @@ import error from "./middleware/errorMiddleware";
 import userRouter from "./routes/userRoute";
 import productRouter from "./routes/productRoute";
 import brandRouter from "./routes/brandRoute";
-import {categoryController} from "./controllers/categoryController";
 import categoryRouter from "./routes/categoryRoute";
+import storeRouter from "./routes/storeRoute";
 
 // Load environment variables
 dotenv.config();
@@ -35,6 +35,7 @@ app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/brand", brandRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/store", storeRouter);
 
 
 mongoose

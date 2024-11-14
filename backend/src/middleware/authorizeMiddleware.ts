@@ -8,23 +8,23 @@ interface IRequest extends Request {
 }
 
 // Middleware to authorize user based on role
-const authorize = (...roles: string[]) => {
+const authorize: any = (...roles: string[]) => {
   return (req: IRequest, res: Response, next: NextFunction) => {
     // Check if user role is available
     if (!req.user || !req.user.role) {
-      res.status(403).json({
+      return res.status(403).json({
         acknowledgement: false,
         message: "Forbidden",
         description: "You're not applicable to access this page and features",
       });
     }
 
-    let user: any = req.user;
-    const userRole = user.role;
+    // Catch & match the user role
+    const userRole = req.user.role;
 
     // Revoke access based on role
     if (!roles.includes(userRole)) {
-      res.status(403).json({
+      return res.status(403).json({
         acknowledgement: false,
         message: "Forbidden",
         description: "You're not applicable to access this page and features",

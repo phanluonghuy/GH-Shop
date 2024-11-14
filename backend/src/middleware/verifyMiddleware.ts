@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 import { promisify } from "util";
 
 interface CustomRequest extends Request {
-    user?: any;
-  }
+  user?: any;
+}
 
 async function verify(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
   try {
