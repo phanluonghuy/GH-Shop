@@ -208,7 +208,7 @@ userSchema.pre("save", async function (next) {
 
     // encrypt password
     this.password = this.encryptedPassword(this.password);
-     console.log("Password encrypted successfully");
+    //  console.log("Password encrypted successfully");
   } catch (error) {
     next(error as mongoose.CallbackError);
   }

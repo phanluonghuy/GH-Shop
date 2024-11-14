@@ -28,7 +28,7 @@ export const  userService = {
         // }
 
         try {
-            console.log('User:', user);
+            // console.log('User:', user);
             await user.save();
             res.status(201).json({
                 acknowledgement: true,
