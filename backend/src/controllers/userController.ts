@@ -31,5 +31,59 @@ export const userController = {
     } finally {
       console.log(`Route: ${req.url} || Method: ${req.method}`);
     }
+  },
+  forgotPassword : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.forgotPassword(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
+  },
+  resetPassword : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.resetPassword(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
+  },
+  updateInfo : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.updateInfo(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
+  },
+  sendResetEmail : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.sendResetEmail(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
+  },
+  resetPasswordEmail : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.resetPasswordEmail(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
+  },
+  resetPasswordToken : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.resetPasswordToken(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
   }
 }

@@ -45,7 +45,16 @@ const authApi = canimApi.injectEndpoints({
         body: userInfo,
       }),
     }),
-
+    changePasswordToken: builder.mutation({
+      query: (body) => ({
+        url: "/user/change-password-token",
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("resetToken")}`,
+        },
+        body,
+      }),
+    }),
     // persist login
     persistLogin: builder.query({
       query: () => ({
@@ -65,5 +74,6 @@ export const {
   useSignUpMutation,
   useSignInMutation,
   useForgotPasswordMutation,
+  useChangePasswordTokenMutation,
   usePersistLoginQuery,
 } = authApi;

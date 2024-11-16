@@ -1,18 +1,3 @@
-/**
- * Title: Write a program using JavaScript on Page
- * Author: Hasibul Islam
- * Portfolio: https://devhasibulislam.vercel.app
- * Linkedin: https://linkedin.com/in/devhasibulislam
- * GitHub: https://github.com/devhasibulislam
- * Facebook: https://facebook.com/devhasibulislam
- * Instagram: https://instagram.com/devhasibulislam
- * Twitter: https://twitter.com/devhasibulislam
- * Pinterest: https://pinterest.com/devhasibulislam
- * WhatsApp: https://wa.me/8801906315901
- * Telegram: devhasibulislam
- * Date: 08, November 2023
- */
-
 "use client";
 
 import Spinner from "@/components/shared/Spinner";
@@ -46,12 +31,12 @@ const ResetPassword = () => {
     }
   }, [data, error, router, isLoading]);
 
+
   const handleResetPassword = (e) => {
     e.preventDefault();
 
     forgotpassword({
-      email: e.target.email.value,
-      password: e.target.password.value,
+      email: e.target.email.value
     });
 
     e.target.reset();
@@ -79,25 +64,14 @@ const ResetPassword = () => {
         >
           <label htmlFor="email" className="flex flex-col gap-y-1">
             <span className="text-sm">Enter Your Email</span>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              placeholder="i.e. example@gmail.com"
-              className=""
-              required
-            />
-          </label>
-          <label htmlFor="password" className="flex flex-col gap-y-1">
-            <span className="text-sm">Enter New Password</span>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="i.e. Admin@123"
-              className=""
-              required
-            />
+              <input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="i.e. example@gmail.com"
+                className=""
+                required
+              />
           </label>
           <button
             type="submit"

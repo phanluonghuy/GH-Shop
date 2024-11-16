@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import User from "../models/userModel";
 import token from "../utils/tokenUtil";
-import { verifyandget_id } from "../utils/tokenUtil";
-import { console } from "inspector";
+import { verifyandget_id,createPasswordResetToken,decodeResetToken } from "../utils/tokenUtil";
+import remove from "../utils/removeUtil";
+import sendEmail from "../utils/emailUtil";
 
 export const userService = {
   signUp: async (req: Request, res: Response): Promise<void> => {
@@ -23,7 +24,7 @@ export const userService = {
       password: body.password,
       phone: body.phone,
     });
-    // Uncomment and modify this section if you want to handle file uploads
+
     if (file) {
       user.avatar = {
         url: file.path,
@@ -50,7 +51,6 @@ export const userService = {
     }
   },
   persistLogin: async (req: Request, res: Response): Promise<void> => {
-  
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
@@ -61,9 +61,25 @@ export const userService = {
       });
       return;
     }
-    const _id = verifyandget_id(token as string);
+    var _id;
+    try {
+      _id = verifyandget_id(token as string);
+    } catch (error) {
+      // Log the error for debugging purposes
+      console.error("Error in verifying token:", error);
 
-    const user = await User.findById(_id)
+      // Send a 401 response with a detailed error message
+      res.status(401).json({
+        acknowledgement: false,
+        message: "Unauthorized", // A more descriptive message than just "Error"
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+
+      return; // End the function execution
+    }
+
+    const user = await User.findById(_id);
     // .populate([
     //   {
     //     path: "cart",
@@ -95,7 +111,7 @@ export const userService = {
     //   "category",
     //   "products",
     // ]);
-  
+
     if (!user) {
       res.status(404).json({
         acknowledgement: false,
@@ -156,4 +172,135 @@ export const userService = {
       }
     }
   },
+  forgotPassword: async (req: Request, res: Response): Promise<void> => {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      res.status(404).json({
+        acknowledgement: false,
+        message: "Error",
+        description: "User not found",
+      });
+      return;
+    }
+    const resetToken = createPasswordResetToken(user._id as string);
+    await sendEmail(resetToken, req.body.email);
+    res.status(200).json({
+      acknowledgement: true,
+      message: "Success",
+      description: "Sent email successfully",
+    });
+    return;
+  },
+  resetPassword: async (req: Request, res: Response): Promise<void> => {
+    const token = req.headers.authorization?.split(" ")[1];
+    const _id = verifyandget_id(token as string);
+    const user = await User.findById(_id);
+    // console.log("Req body:", req.body.currentPassword);
+    // console.log("User:", user);
+    if (user?.comparePassword(req.body.currentPassword, user.password)) {
+      const hashpassword = await user.encryptedPassword(req.body.newPassword);
+      await User.findByIdAndUpdate(
+        _id,
+        {
+          password: hashpassword,
+        },
+        {
+          runValidators: false,
+          returnOriginal: false,
+        }
+      );
+      res.status(200).json({
+        acknowledgement: true,
+        message: "Success",
+        description: "Password updated successfully",
+      });
+    } else {
+      res.status(401).json({
+        acknowledgement: false,
+        message: "Error",
+        description: "Invalid password",
+      });
+      return;
+    }
+  },
+  updateInfo: async (req: Request, res: Response): Promise<void> => {
+    const token = req.headers.authorization?.split(" ")[1];
+    const _id = verifyandget_id(token as string);
+    const user = req.body;
+    const exitsUser = await User.findById(_id);
+    
+
+    // console.log("req:", req);
+
+    if (!req.body.avatar && req.file) {
+      await remove(exitsUser!.avatar?.public_id!);
+      console.log("req.avatar:", req.body.avatar);
+      user!.avatar = {
+        url: req.file.path,
+        public_id: req.file.filename,
+      };
+    }
+
+    await User.findByIdAndUpdate(exitsUser?._id, {$set:user}, { runValidators: true });
+
+    res.status(200).json({
+      acknowledgement: true,
+      message: "OK",
+      description: `${exitsUser?.name}'s information updated successfully`,
+    });
+  },
+  sendResetEmail: async (req: Request, res: Response): Promise<void> => {
+    const email = req.body.email;
+    console.log("Email:", email);
+    res.send("Email sent successfully");
+  },
+  resetPasswordEmail: async (req: Request, res: Response): Promise<void> => {
+    const resetToken = req.params.resetToken;
+    console.log("Reset token:", resetToken);
+    const _id = decodeResetToken(resetToken);
+    const user = await User.findById(_id);
+    if (!user) {
+      res.status(404).json({
+        acknowledgement: false,
+        message: "Error",
+        description: "User not found",
+      });
+      return;
+    }
+    const tokenAccess = token({
+      _id: user._id as string,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+    });
+    res.status(200).json({
+      acknowledgement: true,
+      message: "Success",
+      description: "User logged in successfully",
+      token: tokenAccess,
+    });
+    return;
+  },
+  resetPasswordToken: async (req: Request, res: Response): Promise<void> => {
+    const token = req.headers.authorization?.split(" ")[1];
+    console.log("Token:", req.headers.authorization);
+    const _id = decodeResetToken(token as string);
+    const user = await User.findById(_id);
+    if (!user) {
+      res.status(404).json({
+        acknowledgement: false,
+        message: "Error",
+        description: "Invalid token",
+      });
+      return;
+    }
+    const hash = user.encryptedPassword(req.body.password);
+    await user.updateOne({ password: hash });
+    res.status(200).json({
+      acknowledgement: true,
+      message: "Success",
+      description: "Password updated successfully",
+    });
+  }
 };
