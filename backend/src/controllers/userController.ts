@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { userService } from '../services/userService'; 
+import { get } from 'http';
 
 export const userController = {
   signUp: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -80,6 +81,42 @@ export const userController = {
   resetPasswordToken : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       await userService.resetPasswordToken(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
+  },
+  getAllUser : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.getAllUser(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
+  },
+  getUserById : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.getUserById(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
+  },
+  updateUser : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.updateUser(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
+  },
+  deleteUser : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.deleteUser(req, res);
     } catch (error) {
       next(error);
     } finally {
