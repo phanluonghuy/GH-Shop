@@ -1,42 +1,43 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { promisify } from "util";
 
 interface CustomRequest extends Request {
-    user?: any;
-  }
+  user?: any;
+}
 
-async function verify(req: CustomRequest, res: Response, next: NextFunction): Promise<Response<any, Record<string, any>> | void> {
+async function verify(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    // catch the token from user header
+    // Extract the token from the header
     const token = req.headers?.authorization?.split(" ")[1];
 
-    // no token explicitly give error
+    // Handle missing token
     if (!token) {
-      return res.status(401).json({
+      res.status(401).json({
         acknowledgement: false,
         message: "Unauthorized",
-        description: "No token found to persist an existing user for long time",
+        description: "No token found to persist an existing user for a long time",
       });
+      return;
     }
 
-    // fetching token set the user on request
-    const decoded = await new Promise((resolve, reject) => {
-        jwt.verify(token, process.env.TOKEN_SECRET as string, (err, decoded) => {
-          if (err) {
-            return reject(err);
-          }
-          resolve(decoded);
+    // Verify the token and set `user` on the request object
+    jwt.verify(token, process.env.TOKEN_SECRET as string, (err, decoded) => {
+      if (err) {
+        res.status(401).json({
+          acknowledgement: false,
+          message: "Unauthorized",
+          description: "Invalid or expired token",
         });
-      });
-    req.user = decoded;
-
-    next();
+        return;
+      }
+      req.user = decoded;
+      next();
+    });
   } catch (error) {
-    return res.status(401).json({
+    res.status(401).json({
       acknowledgement: false,
       message: "Unauthorized",
-      description: "Sign in your account to continue",
+      description: "Sign in to your account to continue",
     });
   }
 }

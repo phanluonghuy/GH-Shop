@@ -40,6 +40,10 @@ const Sidebar = () => {
             name: "View Purchases",
             path: "/dashboard/buyer/my-purchases",
           },
+          {
+            name: "Change Password",
+            path: "/dashboard/buyer/change-password",
+          }
         ],
       },
       {

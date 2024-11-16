@@ -23,7 +23,8 @@ import ForgotPassword from "@/components/icons/ForgotPassword";
 import Logout from "@/components/icons/Logout";
 import { useSelector } from "react-redux";
 import Image from "next/image";
-
+import { CgProfile } from "react-icons/cg";
+import { FiLogOut } from "react-icons/fi";
 const Auth = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
@@ -81,7 +82,7 @@ const Auth = () => {
               </Link>
             </>
           ) : (
-            <div className="flex flex-col gap-y-2">
+            <Link href={user?.role === "admin" ? "/dashboard" : "/dashboard/buyer/my-profile"} className="flex flex-col gap-y-2">
               <div className="flex flex-row gap-x-2 p-4">
                 <Image
                   src={user?.avatar?.url}
@@ -108,9 +109,25 @@ const Auth = () => {
                 </article>
               </div>
               <hr />
-              <div className="w-full flex flex-row items-start gap-x-2 p-2 border border-transparent hover:border-black rounded cursor-pointer">
-                <span className="bg-sky-500/5 p-1 rounded">
-                  <Logout />
+              <div className="w-full flex flex-row items-center gap-x-2 p-2 border border-transparent hover:border-black rounded cursor-pointer">
+                <span className="bg-transparent p-1 rounded">
+                <CgProfile className="h-8 w-8" />
+                </span>
+                <article
+                  className="whitespace-nowrap"
+                  onClick={() => {
+                    user?.role === "admin"
+                      ? window.open("/dashboard", "_self")
+                      : window.open("/dashboard/buyer/my-profile", "_self");
+                  }}
+                >
+                  <h2 className="text-sm">Profile</h2>
+                  <p className="text-xs">Managment your profile</p>
+                </article>
+              </div>
+              <div className="w-full flex flex-row items-center gap-x-2 p-2 border border-transparent hover:border-black rounded cursor-pointer">
+                <span className="bg-transparent p-1 rounded">
+                <FiLogOut className="h-8 w-8" />
                 </span>
                 <article
                   className="whitespace-nowrap"
@@ -123,7 +140,7 @@ const Auth = () => {
                   <p className="text-xs">Clear your current activities</p>
                 </article>
               </div>
-            </div>
+            </Link>
           )}
         </OutsideClick>
       )}

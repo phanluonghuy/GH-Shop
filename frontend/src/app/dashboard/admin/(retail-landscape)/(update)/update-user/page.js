@@ -134,7 +134,7 @@ const Page = () => {
     if (avatarPreview !== null) {
       formData.append("avatar", avatar);
     }
-
+    
     updateUserInformation({ id: id, body: formData });
   }
 

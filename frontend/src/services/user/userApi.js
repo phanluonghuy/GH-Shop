@@ -57,6 +57,21 @@ const userApi = canimApi.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
+    // update password
+    updatePassword: builder.mutation({
+      query: (body) => ({
+        url: `/user/reset-password`,
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body,
+      }),
+
+      invalidatesTags: ["User"],
+    }),
+    
+
     // user single user
     updateUserInfo: builder.mutation({
       query: ({ id, body }) => ({
@@ -117,6 +132,7 @@ export const {
   useGetUsersQuery,
   useGetUserQuery,
   useUpdateUserMutation,
+  useUpdatePasswordMutation,
   useUpdateUserInfoMutation,
   useDeleteUserMutation,
   useGetSellerRequestQuery,
