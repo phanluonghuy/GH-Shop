@@ -9,7 +9,7 @@ interface IRequest extends Request {
 }
 
 // Middleware to restrict creating a store if the user already has one
-const restrict = async (req: IRequest, res: Response, next: NextFunction) => {
+const restrict: any = async (req: IRequest, res: Response, next: NextFunction) => {
   try {
     // Find the user by their ID
     const user = await User.findById(req.user?._id);

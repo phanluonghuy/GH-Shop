@@ -1,6 +1,8 @@
 /* external imports */
 import mongoose, { Document, Schema, model } from "mongoose";
 import validator from "validator";
+import Product from "./productModel";
+import User from "./userModel";
 
 /* create category schema interface */
 interface ICategory extends Document {
@@ -71,14 +73,14 @@ const categorySchema = new Schema<ICategory>(
     products: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Product",
+        ref: Product,
       },
     ],
 
     // for creator
     creator: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: User,
     },
 
     // for timestamps
@@ -111,7 +113,7 @@ categorySchema.pre<ICategory>("save", function (next) {
 });
 
 /* create category model */
-const Category = model<ICategory>("Category", categorySchema);
+const Category: any = model<ICategory>("Category", categorySchema);
 
 /* export category model */
 export default Category;

@@ -1,6 +1,11 @@
 /* external imports */
 import mongoose, { Document, Schema, model } from "mongoose";
 import validator from "validator";
+import Review from "./reviewModel";
+import Category from "./categoryModel";
+import Brand from "./brandModel";
+import Store from "./storeModel";
+import User from "./userModel";
 
 /* create product schema interface */
 interface IProduct extends Document {
@@ -136,26 +141,26 @@ const productSchema = new Schema<IProduct>(
     // for category
     category: {
       type: Schema.Types.ObjectId,
-      ref: "Category",
+      ref: Category,
     },
 
     // for brand
     brand: {
       type: Schema.Types.ObjectId,
-      ref: "Brand",
+      ref: Brand,
     },
 
     // for store
     store: {
       type: Schema.Types.ObjectId,
-      ref: "Store",
+      ref: Store,
     },
 
     // for buyers
     buyers: [
       {
         type: Schema.Types.ObjectId,
-        ref: "User",
+        ref: User,
       },
     ],
 
@@ -163,7 +168,7 @@ const productSchema = new Schema<IProduct>(
     reviews: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Review",
+        ref: Review,
       },
     ],
 

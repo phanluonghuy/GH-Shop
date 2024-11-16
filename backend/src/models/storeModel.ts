@@ -1,6 +1,7 @@
 /* external imports */
 import mongoose, { Document, Schema, model } from "mongoose";
 import validator from "validator";
+import User from "./userModel";
 
 /* create store schema interface */
 interface IStore extends Document {
@@ -55,7 +56,7 @@ const storeSchema = new Schema<IStore>(
     // for owner
     owner: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: User,
       required: true,
     },
 
