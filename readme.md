@@ -15,4 +15,9 @@ env frontend
 NEXT_PUBLIC_BASE_URL="http://localhost:8080/api"
 
 
+Stripe card test
 
+Card number: 4242 4242 4242 4242
+12/34
+CVC: 567
+Other form fields: any value

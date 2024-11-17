@@ -1,5 +1,7 @@
 /* external imports */
 import mongoose, { Document, Schema, model } from "mongoose";
+import User from "./userModel";
+import Product from "./productModel";
 
 /* create purchase schema interface */
 interface IProductInPurchase {
@@ -24,7 +26,7 @@ const purchaseSchema = new Schema<IPurchase>(
     // for customer
     customer: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: User,
       required: true,
     },
 
@@ -33,7 +35,7 @@ const purchaseSchema = new Schema<IPurchase>(
       {
         product: {
           type: Schema.Types.ObjectId,
-          ref: "Product",
+          ref: Product,
           required: true,
         },
         quantity: {
