@@ -22,7 +22,7 @@ export const storeService = {
             },
             keynotes: JSON.parse(body.keynotes),
             tags: JSON.parse(body.tags),
-            owner: "6735d601f65ae42edef791c9", // hard code for test :)))
+            owner: "67398eece3530db4bb181b64", // hard code for test :)))
             // owner: req.user._id,
         });
 

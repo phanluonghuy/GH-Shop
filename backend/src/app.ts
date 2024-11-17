@@ -10,6 +10,7 @@ import productRouter from "./routes/productRoute";
 import brandRouter from "./routes/brandRoute";
 import categoryRouter from "./routes/categoryRoute";
 import storeRouter from "./routes/storeRoute";
+import cartRouter from "./routes/cartRoute";
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +38,7 @@ app.use("/api/product", productRouter);
 app.use("/api/brand", brandRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/store", storeRouter);
+app.use("/api/cart", cartRouter);
 
 
 mongoose
