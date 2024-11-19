@@ -8,8 +8,7 @@ interface CustomRequest extends Request {
 
 export const cartService = {
     addToCart: async (req: CustomRequest, res: Response): Promise<void> => {
-        // const user: any = await User.findById(req.user._id);
-        const user: any = await User.findById("67398eece3530db4bb181b64"); // hard code for test :)))
+        const user: any = await User.findById(req.user._id);
         const { product, quantity } = req.body;
 
         const cart: any = await Cart.create({

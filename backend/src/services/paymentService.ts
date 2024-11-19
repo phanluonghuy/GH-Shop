@@ -49,11 +49,13 @@ export const createPayment = async (req: CustomRequest, res: Response): Promise<
 
         // Create purchase for user
         const purchase: any = await Purchase.create({
-            // customer: req.user?._id,
-            customer: "67398eece3530db4bb181b64", // hard code for test :)))
+            customer: req.user?._id,
             customerId: session.id,
             orderId: session.id,
             totalAmount: session.amount_total,
+            automatic_payment_methods: {
+                enabled: true,
+            },
             products: req.body.map((item: { pid: string; quantity: number }) => ({
                 product: item.pid,
                 quantity: item.quantity,
@@ -61,24 +63,15 @@ export const createPayment = async (req: CustomRequest, res: Response): Promise<
         });
 
         // Update user's purchases, products, and empty cart
-        // await User.findByIdAndUpdate(req.user?._id, {
-        //     $push: { purchases: purchase._id },
-        //     $set: { cart: [] },
-        // });
-        await User.findByIdAndUpdate("67398eece3530db4bb181b64", {  // hard code for test :)))
+        await User.findByIdAndUpdate(req.user?._id, {
             $push: { purchases: purchase._id },
             $set: { cart: [] },
         });
 
-        // Add product IDs to user's products array
-        // req.body.forEach(async (item: { pid: string }) => {
-        //     await User.findByIdAndUpdate(req.user?._id, {
-        //         $push: { products: item.pid },
-        //     });
-        // });
 
+        // Add product IDs to user's products array
         req.body.forEach(async (item: { pid: string }) => {
-            await User.findByIdAndUpdate("67398eece3530db4bb181b64", {  // hard code for test :)))
+            await User.findByIdAndUpdate(req.user?._id, {
                 $push: { products: item.pid },
             });
         });
@@ -89,15 +82,9 @@ export const createPayment = async (req: CustomRequest, res: Response): Promise<
         });
 
         // Add user to products' buyers array
-        // req.body.forEach(async (product: { pid: string }) => {
-        //     await Product.findByIdAndUpdate(product.pid, {
-        //         $push: { buyers: req.user?._id },
-        //     });
-        // });
-
         req.body.forEach(async (product: { pid: string }) => {
             await Product.findByIdAndUpdate(product.pid, {
-                $push: { buyers: "67398eece3530db4bb181b64" },  // hard code for test :)))
+                $push: { buyers: req.user?._id },
             });
         });
 
