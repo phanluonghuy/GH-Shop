@@ -13,6 +13,8 @@ import storeRouter from "./routes/storeRoute";
 import cartRouter from "./routes/cartRoute";
 import favoriteRouter from "./routes/favoriteRoute";
 import paymentRouter from "./routes/paymentRoute";
+import purchaseRouter from "./routes/purchaseRoute";
+import reviewRouter from "./routes/reviewRoute";
 
 // Load environment variables
 dotenv.config();
@@ -43,7 +45,8 @@ app.use("/api/store", storeRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/favorite", favoriteRouter);
 app.use("/api/payment", paymentRouter);
-
+app.use("/api/purchase", purchaseRouter);
+app.use("/api/review", reviewRouter);
 
 mongoose
   .connect(MONGO_URI as string)
