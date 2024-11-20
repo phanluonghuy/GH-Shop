@@ -2,6 +2,7 @@
 import mongoose, { Document, Schema, model } from "mongoose";
 import validator from "validator";
 import User from "./userModel";
+import Product from "./productModel";
 
 /* create store schema interface */
 interface IStore extends Document {
@@ -64,7 +65,7 @@ const storeSchema = new Schema<IStore>(
     products: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Product",
+        ref: Product,
       },
     ],
 
@@ -119,7 +120,7 @@ storeSchema.pre("save", function (next) {
 });
 
 /* create store schema model */
-const Store = model<IStore>("Store", storeSchema);
+const Store: any = model<IStore>("Store", storeSchema);
 
 /* export store model */
 export default Store;

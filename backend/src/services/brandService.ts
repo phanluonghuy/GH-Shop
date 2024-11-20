@@ -21,8 +21,7 @@ export const brandService = {
             },
             keynotes: JSON.parse(body.keynotes),
             tags: JSON.parse(body.tags),
-            creator: "6735d601f65ae42edef791c9", // hard code for test :)))
-            // creator: req.user._id,
+            creator: req.user._id,
         });
 
         const result = await brand.save();

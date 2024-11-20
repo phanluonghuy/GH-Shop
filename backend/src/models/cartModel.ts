@@ -1,5 +1,7 @@
 /* external imports */
 import mongoose, { Document, Schema, model } from "mongoose";
+import Product from "./productModel";
+import User from "./userModel";
 
 /* create cart schema interface */
 interface ICart extends Document {
@@ -16,14 +18,14 @@ const cartSchema = new Schema<ICart>(
     // for product
     product: {
       type: Schema.Types.ObjectId,
-      ref: "Product",
+      ref: Product,
       required: true,
     },
 
     // for user
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: User,
       required: true,
     },
 

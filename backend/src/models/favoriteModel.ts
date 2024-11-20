@@ -1,5 +1,7 @@
 /* external imports */
 import mongoose, { Document, Schema, model } from "mongoose";
+import User from "./userModel";
+import Product from "./productModel";
 
 /* create favorite schema interface */
 interface IFavorite extends Document {
@@ -15,14 +17,14 @@ const favoriteSchema = new Schema<IFavorite>(
     // for user
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: User,
       required: true,
     },
 
     // for product
     product: {
       type: Schema.Types.ObjectId,
-      ref: "Product",
+      ref: Product,
       required: true,
     },
 
