@@ -80,38 +80,38 @@ export const userService = {
       return; // End the function execution
     }
 
-    const user = await User.findById(_id);
-    // .populate([
-    //   {
-    //     path: "cart",
-    //     populate: [
-    //       { path: "product", populate: ["brand", "category", "store"] },
-    //       "user",
-    //     ],
-    //   },
-    //   {
-    //     path: "reviews",
-    //     populate: ["product", "reviewer"],
-    //   },
-    //   {
-    //     path: "favorites",
-    //     populate: [
-    //       {
-    //         path: "product",
-    //         populate: ["brand", "category", "store"],
-    //       },
-    //       "user",
-    //     ],
-    //   },
-    //   {
-    //     path: "purchases",
-    //     populate: ["customer", "products.product"],
-    //   },
-    //   "store",
-    //   "brand",
-    //   "category",
-    //   "products",
-    // ]);
+    const user = await User.findById(_id)
+    .populate([
+      {
+        path: "cart",
+        populate: [
+          { path: "product", populate: ["brand", "category", "store"] },
+          "user",
+        ],
+      },
+      {
+        path: "reviews",
+        populate: ["product", "reviewer"],
+      },
+      {
+        path: "favorites",
+        populate: [
+          {
+            path: "product",
+            populate: ["brand", "category", "store"],
+          },
+          "user",
+        ],
+      },
+      {
+        path: "purchases",
+        populate: ["customer", "products.product"],
+      },
+      "store",
+      "brand",
+      "category",
+      "products",
+    ]);
 
     if (!user) {
       res.status(404).json({
