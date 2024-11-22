@@ -35,7 +35,6 @@ const Detail = () => {
     isLoading: productLoading,
   } = useGetProductQuery(id);
   const product = useMemo(() => productData?.data || {}, [productData]);
-
   useEffect(() => {
     if (productError) {
       toast.error(productError?.data?.description, { id: "productData" });
