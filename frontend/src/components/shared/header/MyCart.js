@@ -23,6 +23,7 @@ import { useDeleteFromCartMutation } from "@/services/cart/cartApi";
 import { toast } from "react-hot-toast";
 import Inform from "@/components/icons/Inform";
 import { useCreatePaymentMutation } from "@/services/payment/paymentApi";
+import Link from "next/link";
 
 const MyCart = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -130,7 +131,16 @@ const MyCart = () => {
                     </div>
                   ))}
                 </div>
-                <Purchase cart={user?.cart} />
+                {/* <Purchase cart={user?.cart} /> */}
+                <Link href="/payment">
+                  <button
+                    type="button"
+                    className="px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
+
+                  >
+                    Purchase
+                  </button>
+                </Link>
               </div>
             )}
           </div>
@@ -140,7 +150,7 @@ const MyCart = () => {
   );
 };
 
-function Purchase({ cart }) {
+export function Purchase({ cart }) {
   const [createPayment, { isLoading, data, error }] =
     useCreatePaymentMutation();
 
@@ -179,7 +189,7 @@ function Purchase({ cart }) {
     <>
       <button
         type="button"
-        className="px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
+        className="w-full  px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
         onClick={() => createPayment(result)}
       >
         Purchase

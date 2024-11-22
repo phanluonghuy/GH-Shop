@@ -76,6 +76,7 @@ const userSchema = new Schema<IUser>(
         validate: [validator.isURL, "Please provide a valid avatar URL"],
         default: "https://placehold.co/300x300.png",
       },
+      // porducts  =]]]
       public_id: {
         type: String,
         default: "N/A",
