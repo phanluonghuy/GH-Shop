@@ -12,14 +12,13 @@
  * Telegram: devhasibulislam
  * Date: 04, November 2023
  */
-
 "use client";
 
+import ReactPaginate from "react-paginate";
 import React, { useEffect, useMemo, useState } from "react";
 import Card from "../shared/Card";
 import {
   useGetFilteredProductsMutation,
-  useGetFilteredProductsQuery,
 } from "@/services/product/productApi";
 import { useDispatch, useSelector } from "react-redux";
 import ProductCard from "../shared/skeletonLoading/ProductCard";
@@ -33,6 +32,9 @@ const FilteredProducts = () => {
     addFilter,
     { data: productsData, error: productsError, isLoading: productsLoading },
   ] = useGetFilteredProductsMutation();
+  const [currentPage, setCurrentPage] = useState(0); // Tracks the current page
+  const itemsPerPage = 6;
+
   const products = useMemo(() => productsData?.data || [], [productsData]);
 
   const dispatch = useDispatch();
@@ -42,21 +44,28 @@ const FilteredProducts = () => {
   const store = searchParams.get("store");
 
   useEffect(() => {
-    addFilter(new URLSearchParams(filter).toString());
-  }, [filter, addFilter]);
+    // Fetch products with the current filter and page
+    const queryParams = new URLSearchParams({
+      ...filter,
+      page: currentPage + 1, // ReactPaginate uses zero-based index, API expects 1-based
+    }).toString();
+
+    addFilter(queryParams);
+  }, [filter, addFilter, currentPage]);
 
   useEffect(() => {
-    if (productsLoading) {
-      toast.loading("Loading...", {
-        id: "filtered-products",
-      });
-    }
+    // if (productsLoading) {
+    //   toast.loading("Loading...", {
+    //     id: "filtered-products",
+    //   });
+    // }
 
-    if (productsData) {
-      toast.success(productsData?.description, {
-        id: "filtered-products",
-      });
-    }
+    // if (productsData) {
+    //   toast.success(productsData?.description, {
+    //     id: "filtered-products",
+    //   });
+    //   setTotalPages(productsData?.totalPages || 1); // Update total pages
+    // }
 
     if (productsError?.data) {
       toast.error(productsError?.data?.description, {
@@ -77,30 +86,71 @@ const FilteredProducts = () => {
     dispatch,
   ]);
 
+  const allProducts = useMemo(() => productsData?.data || [], [productsData]);
+
+  // Calculate products for the current page
+  const displayedProducts = useMemo(() => {
+    const start = currentPage * itemsPerPage;
+    return allProducts.slice(start, start + itemsPerPage);
+  }, [allProducts, currentPage, itemsPerPage]);
+
+  useEffect(() => {
+    // Fetch all products on initial render
+    const queryParams = new URLSearchParams(filter).toString();
+    addFilter(queryParams);
+  }, [filter, addFilter]);
+
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+  };
+
   return (
-    <div className="lg:col-span-9 md:col-span-8 col-span-12">
-      <div className="flex flex-col gap-y-8">
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 md:gap-x-6 gap-y-8">
-          {productsLoading ? (
-            <>
-              {[1, 2, 3, 4, 5, 6].map((_, index) => (
-                <ProductCard key={index} />
-              ))}
-            </>
-          ) : (
-            <>
-              {products.map((product, index) => (
-                <Card key={index} product={product} />
-              ))}
-            </>
+      <div className="lg:col-span-9 md:col-span-8 col-span-12">
+        <div className="flex flex-col gap-y-8">
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 md:gap-x-6 gap-y-8">
+            {productsLoading ? (
+                <>
+                  {[1, 2, 3, 4, 5, 6].map((_, index) => (
+                      <ProductCard key={index} />
+                  ))}
+                </>
+            ) : (
+                <>
+                  {displayedProducts.map((product, index) => (
+                      <Card key={index} product={product} />
+                  ))}
+                </>
+            )}
+          </div>
+          {!productsLoading && displayedProducts?.length === 0 && (
+              <p className="text-center">Oops! No products found!</p>
           )}
         </div>
-        {!productsLoading && products?.length === 0 && (
-          <p className="text-center">Oops! No products found!</p>
-        )}
+
+        {/* React Paginate */}
+        <ReactPaginate
+            nextLabel="next >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={3}
+            marginPagesDisplayed={2}
+            pageCount={Math.ceil(allProducts.length / itemsPerPage)}
+            previousLabel="< previous"
+            pageClassName="inline-block mx-1"
+            pageLinkClassName="px-3 py-2 text-blue-600 border border-gray-300 rounded hover:bg-gray-100 hover:text-blue-700"
+            previousClassName="inline-block mx-1"
+            previousLinkClassName="px-3 py-2 text-blue-600 border border-gray-300 rounded hover:bg-gray-100 hover:text-blue-700"
+            nextClassName="inline-block mx-1"
+            nextLinkClassName="px-3 py-2 text-blue-600 border border-gray-300 rounded hover:bg-gray-100 hover:text-blue-700"
+            breakLabel="..."
+            breakClassName="inline-block mx-1"
+            breakLinkClassName="px-3 py-2 text-gray-500 border border-gray-300 rounded"
+            containerClassName="flex justify-center mt-4"
+            activeClassName="bg-green-600"
+        />
+
       </div>
-    </div>
   );
 };
 
 export default FilteredProducts;
+
