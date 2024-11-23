@@ -103,3 +103,23 @@ export const createPayment = async (req: CustomRequest, res: Response): Promise<
         });
     }
 };
+
+// export const createPayment = async (req: CustomRequest, res: Response): Promise<void> => {
+//     try {
+    
+//         console.log(req.body);
+
+
+//         res.status(201).json({
+//             acknowledgement: true,
+//             message: "Ok",
+//             description: "Payment created successfully"
+//         });
+//     } catch (error: any) {
+//         res.status(500).json({
+//             acknowledgement: false,
+//             message: "Internal Server Error",
+//             description: "Failed to create payment"
+//         });
+//     }
+// };
