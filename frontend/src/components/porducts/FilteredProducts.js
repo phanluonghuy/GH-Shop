@@ -35,6 +35,8 @@ const FilteredProducts = () => {
   const [currentPage, setCurrentPage] = useState(0); // Tracks the current page
   const itemsPerPage = 6;
 
+  const [sortOption, setSortOption] = useState(""); // State for sort option
+
   const products = useMemo(() => productsData?.data || [], [productsData]);
 
   const dispatch = useDispatch();
@@ -88,11 +90,35 @@ const FilteredProducts = () => {
 
   const allProducts = useMemo(() => productsData?.data || [], [productsData]);
 
-  // Calculate products for the current page
+  // Sort the products based on the selected option
+  const sortedProducts = useMemo(() => {
+    if (!sortOption) return allProducts;
+
+    return [...allProducts].sort((a, b) => {
+      switch (sortOption) {
+        case "price-asc":
+          return a.price - b.price;
+        case "price-desc":
+          return b.price - a.price;
+        case "title-asc":
+          return a.title.localeCompare(b.title);
+        case "title-desc":
+          return b.title.localeCompare(a.title);
+        case "createdAt-asc":
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        case "createdAt-desc":
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        default:
+          return 0;
+      }
+    });
+  }, [allProducts, sortOption]);
+
+  // Paginate the sorted products
   const displayedProducts = useMemo(() => {
     const start = currentPage * itemsPerPage;
-    return allProducts.slice(start, start + itemsPerPage);
-  }, [allProducts, currentPage, itemsPerPage]);
+    return sortedProducts.slice(start, start + itemsPerPage);
+  }, [sortedProducts, currentPage, itemsPerPage]);
 
   useEffect(() => {
     // Fetch all products on initial render
@@ -104,20 +130,48 @@ const FilteredProducts = () => {
     setCurrentPage(event.selected);
   };
 
+  const handleSortChange = (event) => {
+    setSortOption(event.target.value); // Update the sort option state
+  };
+
   return (
       <div className="lg:col-span-9 md:col-span-8 col-span-12">
+
+        <div className="flex justify-between items-center mb-4">
+          {/* Sort Dropdown */}
+          <div>
+            <label htmlFor="sort" className="mr-2 font-medium">
+              Sort By:
+            </label>
+            <select
+                id="sort"
+                value={sortOption}
+                onChange={handleSortChange}
+                className="p-2 border rounded"
+            >
+              <option value="">Default</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="title-asc">Title: A to Z</option>
+              <option value="title-desc">Title: Z to A</option>
+              <option value="createdAt-asc">Newest</option>
+              <option value="createdAt-desc">Oldest</option>
+            </select>
+          </div>
+        </div>
+
         <div className="flex flex-col gap-y-8">
           <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 md:gap-x-6 gap-y-8">
             {productsLoading ? (
                 <>
                   {[1, 2, 3, 4, 5, 6].map((_, index) => (
-                      <ProductCard key={index} />
+                      <ProductCard key={index}/>
                   ))}
                 </>
             ) : (
                 <>
                   {displayedProducts.map((product, index) => (
-                      <Card key={index} product={product} />
+                      <Card key={index} product={product}/>
                   ))}
                 </>
             )}
