@@ -71,52 +71,61 @@ const Sidebar = () => {
     ];
   }
 
-  if (user?.role === "seller") {
+  // if (user?.role === "seller") {
+  //   routes = [
+  //     {
+  //       name: "My Profile",
+  //       paths: [
+  //         {
+  //           name: "View Profile",
+  //           path: "/dashboard/seller/my-profile",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       name: "My Assets",
+  //       paths: [
+  //         {
+  //           name: "View brand",
+  //           path: "/dashboard/seller/my-brand",
+  //         },
+  //         {
+  //           name: "View Category",
+  //           path: "/dashboard/seller/my-category",
+  //         },
+  //         {
+  //           name: "View Store",
+  //           path: "/dashboard/seller/my-store",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       name: "My Products",
+  //       paths: [
+  //         {
+  //           name: "Add Product",
+  //           path: "/dashboard/seller/add-product",
+  //         },
+  //         {
+  //           name: "List Products",
+  //           path: "/dashboard/seller/list-products",
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // }
+
+  if (user?.role === "admin") {
     routes = [
       {
         name: "My Profile",
         paths: [
           {
             name: "View Profile",
-            path: "/dashboard/seller/my-profile",
+            path: "/dashboard/admin/my-profile",
           },
         ],
       },
-      {
-        name: "My Assets",
-        paths: [
-          {
-            name: "View brand",
-            path: "/dashboard/seller/my-brand",
-          },
-          {
-            name: "View Category",
-            path: "/dashboard/seller/my-category",
-          },
-          {
-            name: "View Store",
-            path: "/dashboard/seller/my-store",
-          },
-        ],
-      },
-      {
-        name: "My Products",
-        paths: [
-          {
-            name: "Add Product",
-            path: "/dashboard/seller/add-product",
-          },
-          {
-            name: "List Products",
-            path: "/dashboard/seller/list-products",
-          },
-        ],
-      },
-    ];
-  }
-
-  if (user?.role === "admin") {
-    routes = [
       {
         name: "Retail Landscape",
         paths: [
@@ -161,11 +170,37 @@ const Sidebar = () => {
           {
             name: "List Users",
             path: "/dashboard/admin/list-users",
+          }
+        ],
+      },
+      {
+        name: "My Assets",
+        paths: [
+          {
+            name: "Add brand",
+            path: "/dashboard/admin/my-brand",
           },
           {
-            name: "Sellers Requests",
-            path: "/dashboard/admin/seller-requests",
+            name: "Add Category",
+            path: "/dashboard/admin/my-category",
           },
+          {
+            name: "Add Store",
+            path: "/dashboard/admin/my-store",
+          },
+        ],
+      },
+      {
+        name: "My Products",
+        paths: [
+          {
+            name: "Add Product",
+            path: "/dashboard/admin/add-product",
+          },
+          // {
+          //   name: "Update Products",
+          //   path: "/dashboard/admin/update-product",
+          // },
         ],
       },
     ];

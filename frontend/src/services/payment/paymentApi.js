@@ -19,13 +19,18 @@ const paymentApi = canimApi.injectEndpoints({
   endpoints: (build) => ({
     // create payment
     createPayment: build.mutation({
-      query: (body) => ({
+      query: ({ result, address, phone,name }) => ({
         url: "/payment/create-payment",
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
-        body,
+        body : {
+          result,
+          address,
+          phone,
+          name
+        }
       }),
     }),
   }),

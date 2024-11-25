@@ -14,7 +14,7 @@ interface IUser extends Document {
     public_id: string;
   };
   phone: string;
-  role: "admin" | "buyer" | "seller" | "guest";
+  role: "admin" | "buyer" | "guest";
   status: "active" | "inactive";
   cart: ObjectId[];
   favorites: ObjectId[];
@@ -113,7 +113,7 @@ const userSchema = new Schema<IUser>(
     // for role
     role: {
       type: String,
-      enum: ["admin", "buyer", "seller", "guest"],
+      enum: ["admin", "buyer", "guest"],
       default: "buyer",
     },
 

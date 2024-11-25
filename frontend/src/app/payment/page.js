@@ -23,6 +23,7 @@ const Payment = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [address, setAddress] = useState(user?.address || '');
     const [phone, setPhone] = useState(user?.phone || '');
+    const [name, setName] = useState(user?.name || '');
     const cartInfo = {
         length: user?.cart?.length || 0,
         total: user?.cart?.reduce((acc, { product, quantity, _id }) => acc + product?.price * quantity, 0) || 0,
@@ -76,15 +77,27 @@ const Payment = () => {
                                                 className="w-full p-2 border rounded-md mb-4"
                                                 placeholder="Enter your address"
                                                 value={address}
-                                                onChange={(e) => setAddress(e.target.value)}
+                                                onChange={(e) =>
+                                                    setAddress(e.target.value)
+                                                }
                                             />
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2 border rounded-md"
+                                                className="w-full p-2 border rounded-md mb-4"
                                                 placeholder="Enter your phone number"
                                                 value={phone}
                                                 onChange={(e) => setPhone(e.target.value)}
+                                            />
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 border rounded-md mb-4"
+                                                placeholder="Enter your name"
+                                                value={name}
+                                                onChange={(e) =>
+                                                    setName(e.target.value)
+                                                }
                                             />
                                         </div>
                                     ) : (
@@ -92,8 +105,11 @@ const Payment = () => {
                                             <p className="text-sm text-gray-600 mb-2">
                                                 <strong>Address:</strong> {address}
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-gray-600 mb-2">
                                                 <strong>Phone Number:</strong> {phone}
+                                            </p>
+                                            <p className="text-sm text-gray-600">
+                                                <strong>Name:</strong> {name}
                                             </p>
                                         </div>
                                     )}
@@ -194,7 +210,7 @@ const Payment = () => {
                                         <button className="w-full bg-gray-200 text-gray-800 py-2 rounded-md hover:bg-gray-300">
                                             Apply
                                         </button>
-                                        <Purchase cart={user?.cart} />
+                                        <Purchase cart={user.cart} address={address} phone={phone} name={name} />
                                         <div className="text-center">
                                             <span className="text-sm text-gray-600">or</span>
                                             <Link href="/" className="block text-blue-600 hover:underline mt-2">
@@ -227,52 +243,52 @@ function Icon({ id, open }) {
     );
 }
 
-function Purchase({ cart }) {
+function Purchase({ cart, address, phone, name }) {
     const [createPayment, { isLoading, data, error }] =
-      useCreatePaymentMutation();
-  
+        useCreatePaymentMutation();
+
     useEffect(() => {
-      if (isLoading) {
-        toast.loading("Creating payment...", { id: "createPayment" });
-      }
-  
-      if (data) {
-        toast.success(data?.description, { id: "createPayment" });
-        window.open(data?.url, "_blank");
-      }
-  
-      if (error?.data) {
-        toast.error(error?.data?.description, { id: "createPayment" });
-      }
+        if (isLoading) {
+            toast.loading("Creating payment...", { id: "createPayment" });
+        }
+
+        if (data) {
+            toast.success(data?.description, { id: "createPayment" });
+            window.open(data?.url, "_blank");
+        }
+
+        if (error?.data) {
+            toast.error(error?.data?.description, { id: "createPayment" });
+        }
     }, [isLoading, data, error]);
-  
+
     const result = cart.map(
-      ({
-        product: { title, thumbnail, price, summary, _id: pid },
-        quantity,
-        _id: cid,
-      }) => ({
-        name: title,
-        quantity,
-        price,
-        thumbnail: thumbnail?.url,
-        description: summary,
-        pid,
-        cid,
-      })
+        ({
+            product: { title, thumbnail, price, summary, _id: pid },
+            quantity,
+            _id: cid,
+        }) => ({
+            name: title,
+            quantity,
+            price,
+            thumbnail: thumbnail?.url,
+            description: summary,
+            pid,
+            cid,
+        })
     );
-  
+
     return (
-      <>
-        <button
-          type="button"
-          className="w-full  px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
-          onClick={() => createPayment(result)}
-        >
-          Purchase
-        </button>
-      </>
+        <>
+            <button
+                type="button"
+                className="w-full  px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
+                onClick={() => createPayment({ result, address, phone, name })}
+            >
+                Purchase
+            </button>
+        </>
     );
-  }
+}
 
 export default Payment;
