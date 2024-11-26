@@ -9,6 +9,7 @@ import {
     AccordionHeader,
     AccordionBody,
 } from "@material-tailwind/react";
+import { useGetCouponCodeQuery } from "@/services/coupon/couponApi";
 import React, { useEffect, useState } from "react";
 import { useCreatePaymentMutation } from "@/services/payment/paymentApi";
 import { toast } from "react-hot-toast";
@@ -20,26 +21,78 @@ const Payment = () => {
     const [paymentStatus, setPaymentStatus] = useState('success');
     const [open, setOpen] = React.useState(0);
     const [promoCode, setPromoCode] = useState('');
+    let [code, setCode] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [address, setAddress] = useState(user?.address || '');
     const [phone, setPhone] = useState(user?.phone || '');
     const [name, setName] = useState(user?.name || '');
-    const cartInfo = {
+    const [cartInfo, setCartInfo] = useState({
         length: user?.cart?.length || 0,
-        total: user?.cart?.reduce((acc, { product, quantity, _id }) => acc + product?.price * quantity, 0) || 0,
+        total: user?.cart?.reduce((acc, { product, quantity }) => acc + product?.price * quantity, 0) || 0,
         tax: 0,
         sumary: 0,
-        discount: 0
-    };
-    const handleOpen = (value) => setOpen(open === value ? 0 : value);
+        discount: 0,
+    });
+    let { data: fetchApplyCouponData, isLoading: fetchingApplyCoupon, error: fetchApplyCouponError } = useGetCouponCodeQuery(code, { skip: !code });
 
+    const handleOpen = (value) => setOpen(open === value ? 0 : value);
     cartInfo.tax = cartInfo.total * 0.1;
-    cartInfo.discount = promoCode === 'DISCOUNT' ? cartInfo.total * 0.1 : 0;
     cartInfo.sumary = cartInfo.total + cartInfo.tax - cartInfo.discount;
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form submitted');
+
+    const handleApplyPromoCode = () => {
+        setCode(promoCode);
     };
+
+    useEffect(() => {
+        if (fetchingApplyCoupon) {
+            toast.loading("Applying Coupon...", { id: "coupon" });
+        }
+
+        // When there's an error (invalid coupon)
+        if (fetchApplyCouponError) {
+            const tax = cartInfo.total * 0.1;
+            let discount = 0;  // Reset the discount
+            const sumary = cartInfo.total + tax - discount;
+
+            setCartInfo((prev) => ({
+                ...prev,
+                tax,
+                discount,
+                sumary,
+            }));
+            toast.error("Your Coupon can't apply", { id: "coupon" });
+        }
+
+        // When valid coupon data is received
+        if (fetchApplyCouponData && !fetchApplyCouponError) {
+            const tax = cartInfo.total * 0.1;
+            let discount = cartInfo.total * fetchApplyCouponData.data.discountValue/ 100;
+            const sumary = cartInfo.total + tax - discount;
+
+            setCartInfo((prev) => ({
+                ...prev,
+                tax,
+                discount,
+                sumary,
+            }));
+            toast.success("Your Coupon has been applied", { id: "coupon" });
+        }
+
+        // Reset cart info if the promo code is cleared or invalid
+        if (!code || !fetchApplyCouponData || fetchApplyCouponError) {
+            const tax = cartInfo.total * 0.1;
+            let discount = 0; // Reset the discount if code is invalid or empty
+            const sumary = cartInfo.total + tax - discount;
+
+            setCartInfo((prev) => ({
+                ...prev,
+                tax,
+                discount,
+                sumary,
+            }));
+        }
+    }, [code, fetchingApplyCoupon, fetchApplyCouponData, fetchApplyCouponError]);
+
     return (
         <Main>
             <Container>
@@ -207,10 +260,13 @@ const Payment = () => {
                                             value={promoCode}
                                             onChange={(e) => setPromoCode(e.target.value)}
                                         />
-                                        <button className="w-full bg-gray-200 text-gray-800 py-2 rounded-md hover:bg-gray-300">
+                                        <button
+                                            className="w-full bg-gray-200 text-gray-800 py-2 rounded-md hover:bg-gray-300"
+                                            onClick={handleApplyPromoCode}
+                                        >
                                             Apply
                                         </button>
-                                        <Purchase cart={user.cart} address={address} phone={phone} name={name} />
+                                        <Purchase cart={user.cart} address={address} phone={phone} name={name} coupon={code}/>
                                         <div className="text-center">
                                             <span className="text-sm text-gray-600">or</span>
                                             <Link href="/" className="block text-blue-600 hover:underline mt-2">
@@ -243,7 +299,7 @@ function Icon({ id, open }) {
     );
 }
 
-function Purchase({ cart, address, phone, name }) {
+function Purchase({ cart, address, phone, name, coupon }) {
     const [createPayment, { isLoading, data, error }] =
         useCreatePaymentMutation();
 
@@ -261,7 +317,7 @@ function Purchase({ cart, address, phone, name }) {
             toast.error(error?.data?.description, { id: "createPayment" });
         }
     }, [isLoading, data, error]);
-
+    if (!cart) return null;
     const result = cart.map(
         ({
             product: { title, thumbnail, price, summary, _id: pid },
@@ -278,12 +334,14 @@ function Purchase({ cart, address, phone, name }) {
         })
     );
 
+
+
     return (
         <>
             <button
                 type="button"
                 className="w-full  px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
-                onClick={() => createPayment({ result, address, phone, name })}
+                onClick={() => createPayment({ result, address, phone, name, coupon})}
             >
                 Purchase
             </button>

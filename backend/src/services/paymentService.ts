@@ -5,6 +5,7 @@ import Purchase from "../models/purchaseModel";
 import User from "../models/userModel";
 import dotenv from "dotenv";
 import { verifyandget_id } from "../utils/tokenUtil";
+import Coupon from "../models/couponModel";
 
 dotenv.config();
 
@@ -19,6 +20,22 @@ export const createPayment = async (
   res: Response
 ): Promise<void> => {
   try {
+    // const coupon = Coupon.findOne({ code: req.body.coupon });
+    // if (coupon) {
+    //   console.log(coupon.);
+    // }
+    // console.log(req.body);
+    // await Coupon.findOne( { $regex: new RegExp(`^${req.params.id}$`, 'i') }).then((coupon) => {  
+    //     console.log(coupon);
+    // });
+    const coupon = await Coupon.findOne({ 
+      code: { $regex: new RegExp(`^${req.body.coupon}$`, 'i') } 
+    });
+    
+    let discount = 1 - (coupon?.discountValue || 0) / 100;
+
+    // console.log(discount);
+
     const token = req.headers.authorization?.split(" ")[1];
     const _id = verifyandget_id(token as string);
     const user = await User.findByIdAndUpdate(_id, {
@@ -28,7 +45,8 @@ export const createPayment = async (
         name: req.body.name,
       },
     });
-    console.log(user);
+    // console.log(user);
+    // console.log(req.body.result);
     if (!user) {
       res.status(404).json({
         acknowledgement: false,
@@ -58,7 +76,7 @@ export const createPayment = async (
                 id: item.pid,
               },
             },
-            unit_amount: item.price * 100,
+            unit_amount: item.price * 100 ,
           },
           quantity: item.quantity,
         };
@@ -81,7 +99,7 @@ export const createPayment = async (
         automatic_payment_methods: {
             enabled: true,
         },
-        products: req.body.map((item: { pid: string; quantity: number }) => ({
+        products: req.body.result.map((item: { pid: string; quantity: number }) => ({
             product: item.pid,
             quantity: item.quantity,
         })),
@@ -94,19 +112,19 @@ export const createPayment = async (
     });
 
     // Add product IDs to user's products array
-    req.body.forEach(async (item: { pid: string }) => {
+    req.body.result.forEach(async (item: { pid: string }) => {
         await User.findByIdAndUpdate(req.user?._id, {
             $push: { products: item.pid },
         });
     });
 
     // Remove carts that match cart IDs
-    req.body.forEach(async (cart: { cid: string }) => {
+    req.body.result.forEach(async (cart: { cid: string }) => {
         await Cart.findByIdAndDelete(cart.cid);
     });
 
     // Add user to products' buyers array
-    req.body.forEach(async (product: { pid: string }) => {
+    req.body.result.forEach(async (product: { pid: string }) => {
         await Product.findByIdAndUpdate(product.pid, {
             $push: { buyers: req.user?._id },
         });

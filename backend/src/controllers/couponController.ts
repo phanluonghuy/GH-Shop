@@ -30,6 +30,16 @@ export const couponController = {
         }
     }
     ,
+    getCouponCode: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await couponService.getCouponCode(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    }
+    ,
     deleteCoupon: async (req: Request, res: Response, next: NextFunction) => {
         try {
             await couponService.deleteCoupon(req, res);
