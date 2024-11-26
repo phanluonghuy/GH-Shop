@@ -133,7 +133,7 @@ const Auth = () => {
                   className="whitespace-nowrap"
                   onClick={() => {
                     localStorage.removeItem("accessToken");
-                    window.location.reload();
+                    window.open("/", "_self");
                   }}
                 >
                   <h2 className="text-sm">Logout</h2>

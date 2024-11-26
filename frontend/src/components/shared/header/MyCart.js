@@ -23,6 +23,7 @@ import { useDeleteFromCartMutation } from "@/services/cart/cartApi";
 import { toast } from "react-hot-toast";
 import Inform from "@/components/icons/Inform";
 import { useCreatePaymentMutation } from "@/services/payment/paymentApi";
+import Link from "next/link";
 
 const MyCart = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -130,7 +131,16 @@ const MyCart = () => {
                     </div>
                   ))}
                 </div>
-                <Purchase cart={user?.cart} />
+                {/* <Purchase cart={user?.cart} /> */}
+                <Link href="/payment">
+                  <button
+                    type="button"
+                    className="w-full px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
+
+                  >
+                    Check Out
+                  </button>
+                </Link>
               </div>
             )}
           </div>
@@ -139,53 +149,5 @@ const MyCart = () => {
     </>
   );
 };
-
-function Purchase({ cart }) {
-  const [createPayment, { isLoading, data, error }] =
-    useCreatePaymentMutation();
-
-  useEffect(() => {
-    if (isLoading) {
-      toast.loading("Creating payment...", { id: "createPayment" });
-    }
-
-    if (data) {
-      toast.success(data?.description, { id: "createPayment" });
-      window.open(data?.url, "_blank");
-    }
-
-    if (error?.data) {
-      toast.error(error?.data?.description, { id: "createPayment" });
-    }
-  }, [isLoading, data, error]);
-
-  const result = cart.map(
-    ({
-      product: { title, thumbnail, price, summary, _id: pid },
-      quantity,
-      _id: cid,
-    }) => ({
-      name: title,
-      quantity,
-      price,
-      thumbnail: thumbnail?.url,
-      description: summary,
-      pid,
-      cid,
-    })
-  );
-
-  return (
-    <>
-      <button
-        type="button"
-        className="px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
-        onClick={() => createPayment(result)}
-      >
-        Purchase
-      </button>
-    </>
-  );
-}
 
 export default MyCart;

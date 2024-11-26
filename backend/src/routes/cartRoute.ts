@@ -6,7 +6,8 @@ import {cartController} from "../controllers/cartController";
 
 const cartRouter = express.Router();
 
-cartRouter.post('/add-to-cart', verify, authorize("buyer"), cartController.addToCart);
+// cartRouter.post('/add-to-cart', verify, authorize("buyer"), cartController.addToCart);
+cartRouter.post('/add-to-cart', cartController.addToCart);
 
 cartRouter.get('/get-from-cart', verify, authorize("admin"), cartController.getFromCart);
 

@@ -36,6 +36,10 @@ const CartButton = ({ product }) => {
     }
 
     if (cartData) {
+      if (cartData?.accessToken) {
+        localStorage.setItem("accessToken", cartData.accessToken);
+        window.location.reload();
+      }
       toast.success(cartData?.description, { id: "addToCart" });
       setQty(1);
     }

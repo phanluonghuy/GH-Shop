@@ -67,7 +67,7 @@ export const userService = {
       _id = verifyandget_id(token as string);
     } catch (error) {
       // Log the error for debugging purposes
-      console.error("Error in verifying token:", error);
+      // console.error("Error in verifying token:", error);
 
       // Send a 401 response with a detailed error message
       res.status(401).json({

@@ -14,7 +14,7 @@ interface IUser extends Document {
     public_id: string;
   };
   phone: string;
-  role: "admin" | "buyer" | "seller";
+  role: "admin" | "buyer" | "guest";
   status: "active" | "inactive";
   cart: ObjectId[];
   favorites: ObjectId[];
@@ -76,6 +76,7 @@ const userSchema = new Schema<IUser>(
         validate: [validator.isURL, "Please provide a valid avatar URL"],
         default: "https://placehold.co/300x300.png",
       },
+      // porducts  =]]]
       public_id: {
         type: String,
         default: "N/A",
@@ -85,23 +86,34 @@ const userSchema = new Schema<IUser>(
     // for contact number
     phone: {
       type: String,
-      required: [
-        true,
-        "Please, provide your phone number, i.e.: +84xxxxxxxxx",
-      ],
+      default: "N/A",
+      trim: true,
       validate: {
         validator: (value: string) =>
+          value === "N/A" ||
           validator.isMobilePhone(value, "vi-VN", { strictMode: true }),
         message:
           "Phone number {VALUE} is not valid. Please, retry like +84xxxxxxxxx",
       },
-      unique: true,
+      // type: String,
+      // required: [
+      //   true,
+      //   "Please, provide your phone number, i.e.: +84xxxxxxxxx",
+      // ],
+      // default: "N/A",
+      // validate: {
+      //   validator: (value: string) =>
+      //     value === "N/A" || validator.isMobilePhone(value, "vi-VN", { strictMode: true }),
+      //   message:
+      //     "Phone number {VALUE} is not valid. Please, retry like +84xxxxxxxxx",
+      // },
+      // unique: true,
     },
 
     // for role
     role: {
       type: String,
-      enum: ["admin", "buyer", "seller"],
+      enum: ["admin", "buyer", "guest"],
       default: "buyer",
     },
 
