@@ -39,6 +39,10 @@ export const productService = {
             variations: parsedVariations,
             thumbnail,
             gallery,
+            stock: {
+                total: 0,
+                variations: []
+            },
         });
 
         // add product id to category, brand and store
@@ -233,6 +237,125 @@ export const productService = {
                 acknowledgement: false,
                 message: "Internal Server Error",
                 description: "Failed to fetch filtered products",
+                error: error.message,
+            });
+        }
+    },
+
+    /* Restock inventory */
+    restockProduct: async (req: Request, res: Response): Promise<void> => {
+        const { id } = req.params;
+        const { variations } = req.body;
+
+        try {
+            const product: any = await Product.findById(id);
+            if (!product) res.status(404).json({ message: "Product not found" });
+
+            // Update stock for the specified variations
+            for (const variation of variations) {
+                const stockVariant: any = product.stock.variations.find(
+                    (v: any) => v.color === variation.color && v.size === variation.size
+                );
+                if (stockVariant) {
+                    stockVariant.quantity += variation.quantity;
+                } else {
+                    product.stock.variations.push(variation);
+                }
+            }
+
+            // Recalculate total stock
+            product.stock.total = product.stock.variations.reduce((acc: number, v: any) => acc + v.quantity, 0);
+
+            await product.save();
+
+            res.status(200).json({
+                acknowledgement: true,
+                message: "Ok",
+                description: "Product restocked successfully",
+                data: product.stock,
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                acknowledgement: false,
+                message: "Internal Server Error",
+                description: "Failed to restock product",
+                error: error.message,
+            });
+        }
+    },
+
+    /* Reduce stock after sale */
+    sellProduct: async (req: Request, res: Response): Promise<void> => {
+        const { id } = req.params;
+        const { variations } = req.body;
+
+        try {
+            const product: any = await Product.findById(id);
+            if (!product) res.status(404).json({ message: "Product not found" });
+
+            // Update stock for the specified variations
+            for (const variation of variations) {
+                const stockVariant = product.stock.variations.find(
+                    (v: any) => v.color === variation.color && v.size === variation.size
+                );
+                if (stockVariant) {
+                    stockVariant.quantity -= variation.quantity;
+                    if (stockVariant.quantity < 0) {
+                        res.status(400).json({
+                            acknowledgement: false,
+                            message: "Insufficient stock",
+                            description: `Not enough stock for color: ${variation.color}, size: ${variation.size}`,
+                        });
+                    }
+                } else {
+                        res.status(400).json({
+                        acknowledgement: false,
+                        message: "Variant not found",
+                        description: `Variant with color: ${variation.color}, size: ${variation.size} not found`,
+                    });
+                }
+            }
+
+            // Recalculate total stock
+            product.stock.total = product.stock.variations.reduce((acc: number, v: any) => acc + v.quantity, 0);
+
+            await product.save();
+
+            res.status(200).json({
+                acknowledgement: true,
+                message: "Ok",
+                description: "Product sold successfully",
+                data: product.stock,
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                acknowledgement: false,
+                message: "Internal Server Error",
+                description: "Failed to update product stock",
+                error: error.message,
+            });
+        }
+    },
+
+    /* Get stock details */
+    getStockDetails: async (req: Request, res: Response): Promise<void> => {
+        const { id } = req.params;
+
+        try {
+            const product: any = await Product.findById(id);
+            if (!product) res.status(404).json({ message: "Product not found" });
+
+            res.status(200).json({
+                acknowledgement: true,
+                message: "Ok",
+                description: "Product stock details fetched successfully",
+                data: product.stock,
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                acknowledgement: false,
+                message: "Internal Server Error",
+                description: "Failed to fetch product stock details",
                 error: error.message,
             });
         }

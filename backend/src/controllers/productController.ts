@@ -61,4 +61,34 @@ export const productController = {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
     },
+
+    restockProduct: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await productService.restockProduct(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
+    sellProduct: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await productService.sellProduct(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
+    getStockDetails: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await productService.getStockDetails(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
 }
