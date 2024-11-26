@@ -26,4 +26,25 @@ productRouter.delete('/delete-product/:id',verify, authorize("admin", "seller"),
 
 productRouter.get('/filtered-products', productController.getFilteredProducts)
 
+// Inventory management routes
+productRouter.post(
+    "/restock-product/:id",
+    verify,
+    authorize("admin"),
+    productController.restockProduct
+);
+
+productRouter.post(
+    "/sell-product/:id",
+    verify,
+    authorize("admin"),
+    productController.sellProduct
+);
+
+productRouter.get(
+    "/product-stock/:id",
+    verify,
+    productController.getStockDetails
+);
+
 export default productRouter;
