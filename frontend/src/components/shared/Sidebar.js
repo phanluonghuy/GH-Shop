@@ -203,6 +203,19 @@ const Sidebar = () => {
           // },
         ],
       },
+      {
+        name: "My Coupons",
+        paths: [
+          {
+            name: "List Coupons",
+            path: "/dashboard/admin/list-coupons",
+          },
+          {
+            name: "Add Coupon",
+            path: "/dashboard/admin/update-coupon",
+          },
+        ],
+      },
     ];
   }
 

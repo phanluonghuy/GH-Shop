@@ -15,6 +15,7 @@ import favoriteRouter from "./routes/favoriteRoute";
 import paymentRouter from "./routes/paymentRoute";
 import purchaseRouter from "./routes/purchaseRoute";
 import reviewRouter from "./routes/reviewRoute";
+import couponRouter from "./routes/couponRoute";
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +48,7 @@ app.use("/api/favorite", favoriteRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/purchase", purchaseRouter);
 app.use("/api/review", reviewRouter);
+app.use("/api/coupon", couponRouter);
 
 mongoose
   .connect(MONGO_URI as string)
