@@ -160,8 +160,8 @@ export const paymentService = {
     const requestBody = {
       shipment: {
         address_from: {
-          city: '520000',
-          district: '520700',
+          city: '100000',
+          district: '100100',
         },
         address_to: {
           city: result?.city_id ?? '700000',
