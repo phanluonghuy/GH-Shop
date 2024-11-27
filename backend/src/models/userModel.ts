@@ -3,6 +3,7 @@ import mongoose, { Document, Schema, model, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 import validator from "validator";
 import { ObjectId } from "mongoose";
+import { addressSchema, IAddress } from "./userAddressModel";
 
 /* create user schema interface */
 interface IUser extends Document {
@@ -24,7 +25,7 @@ interface IUser extends Document {
   brand?: ObjectId;
   category?: ObjectId;
   products: ObjectId[];
-  address: string;
+  address: IAddress[];
   createdAt: Date;
   updatedAt: Date;
   encryptedPassword(password: string): string;
@@ -183,12 +184,26 @@ const userSchema = new Schema<IUser>(
     ],
 
     // for address
-    address: {
-      type: String,
-      default: "N/A",
-      trim: true,
-      maxLength: [500, "Your address would be at most 500 characters"],
-    },
+    // address: {
+    //   type: String,
+    //   default: "N/A",
+    //   trim: true,
+    //   maxLength: [500, "Your address would be at most 500 characters"],
+    // },
+    // avatar: {
+    //   url: {
+    //     type: String,
+    //     validate: [validator.isURL, "Please provide a valid avatar URL"],
+    //     default: "https://placehold.co/300x300.png",
+    //   },
+    //   // porducts  =]]]
+    //   public_id: {
+    //     type: String,
+    //     default: "N/A",
+    //   },
+    // },
+
+    address: [addressSchema],
 
     createdAt: {
       type: Date,
