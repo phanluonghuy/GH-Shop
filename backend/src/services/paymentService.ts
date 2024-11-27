@@ -88,9 +88,11 @@ export const paymentService = {
       const session = await stripe.checkout.sessions.create({
         line_items: lineItems,
         mode: "payment",
-        success_url: `${process.env.ORIGIN_URL}`,
-        cancel_url: `${process.env.ORIGIN_URL}`,
+        success_url: `${process.env.ORIGIN_URL}/payment-success`,
+        cancel_url: `${process.env.ORIGIN_URL}/payment-failed`,
       });
+
+
   
       // Create purchase for user
       const purchase: any = await Purchase.create({
