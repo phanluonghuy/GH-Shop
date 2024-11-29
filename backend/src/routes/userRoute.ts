@@ -23,7 +23,6 @@ userRouter.get('/all-users',verify,authorize("admin"), userController.getAllUser
 userRouter.get('/get-user/:id',verify,authorize("admin"), userController.getUserById);
 userRouter.patch('/update-user/:id',verify,upload.single("avatar"),authorize("admin"), userController.updateUser);
 userRouter.delete('/delete-user/:id',verify,authorize("admin"), userController.deleteUser);
-
 userRouter.get('/sign-in-google',passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 userRouter.get(
@@ -35,11 +34,6 @@ userRouter.get(
         console.log('User authenticated:', name, email);
         const user = await User.findOne({email: email});// Log or handle user data
         if (!user) {
-            // res.status(401).json({
-            //     acknowledgement: false,
-            //     message: "Failed",
-            //     description: "User not found",
-            // });
             return res.redirect(`${process.env.ORIGIN_URL}/`);
         }
             const tokenAccess = token({
@@ -50,24 +44,9 @@ userRouter.get(
             status: user.status,
         });
         res.cookie('token', tokenAccess);// Set the token in a cookie
-        // res.status(200).json({
-        //     acknowledgement: true,
-        //     message: "Success",
-        //     description: "User logged in successfully",
-        //     token: tokenAccess,
-        // });
-        // return;
         res.redirect(`${process.env.ORIGIN_URL}/`);// Redirect to the client URL
-        // res.redirect('http://localhost:8080/api/user/profile')
     }
 );
 
-userRouter.get('/profile', (req, res) => {
-    if (req.isAuthenticated()) {
-        res.json(req.user);
-    } else {
-        res.status(401).json({ message: 'Not authenticated' });
-    }
-});
 
 export default userRouter;
