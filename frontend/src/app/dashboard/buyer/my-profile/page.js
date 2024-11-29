@@ -1,23 +1,12 @@
-/**
- * Title: Write a program using JavaScript on Page
- * Author: Hasibul Islam
- * Portfolio: https://devhasibulislam.vercel.app
- * Linkedin: https://linkedin.com/in/devhasibulislam
- * GitHub: https://github.com/devhasibulislam
- * Facebook: https://facebook.com/devhasibulislam
- * Instagram: https://instagram.com/devhasibulislam
- * Twitter: https://twitter.com/devhasibulislam
- * Pinterest: https://pinterest.com/devhasibulislam
- * WhatsApp: https://wa.me/8801906315901
- * Telegram: devhasibulislam
- * Date: 14, January 2024
- */
+
 
 "use client";
 
 import Inform from "@/components/icons/Inform";
 import Trash from "@/components/icons/Trash";
 import Modal from "@/components/shared/Modal";
+import Plus from "@/components/icons/Plus";
+import Minus from "@/components/icons/Minus";
 import Dashboard from "@/components/shared/layouts/Dashboard";
 import {
   useDeleteUserMutation,
@@ -35,10 +24,12 @@ const Page = () => {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [updateUserInformation, { isLoading, data, error }] =
     useUpdateUserMutation();
+  const [addresses, setAddresses] = useState([]);
+
 
   useEffect(() => {
     setUser(userInfo);
-
+    setAddresses(userInfo.address);
     if (isLoading) {
       toast.loading("Updating user...", { id: "updateUserInformation" });
     }
@@ -65,6 +56,30 @@ const Page = () => {
       reader.readAsDataURL(file);
     }
   };
+  const handleAddAddress = () => {
+    setAddresses([
+      ...addresses,
+      {
+        city: "",
+        district: "",
+        street: "",
+        zipCode: "",
+        contactNumber: "",
+      },
+    ]);
+  };
+
+  const handleRemoveAddress = (index) => {
+    setAddresses(addresses.filter((_, i) => i !== index));
+  };
+
+  const handleAddressChange = (index, field, value) => {
+    const updatedAddresses = addresses.map((address, i) =>
+      i === index ? { ...address, [field]: value } : address
+    );
+    setAddresses(updatedAddresses);
+  };
+
 
   function handleEditProfile(event) {
     event.preventDefault();
@@ -73,7 +88,6 @@ const Page = () => {
       name: event.target.name.value,
       email: event.target.email.value,
       phone: event.target.phone.value,
-      address: event.target.address.value,
       role: event.target.role.value,
     };
 
@@ -82,18 +96,40 @@ const Page = () => {
       updatedUser.status = "inactive";
     }
 
-    // If avatarPreview is available, add it to the formData
+    // Initialize FormData
     const formData = new FormData();
-    Object.entries(updatedUser).forEach(([key, value]) =>
-      formData.append(key, value)
-    );
 
+    // Append basic user information
+    Object.entries(updatedUser).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    // Append avatar if available
     if (avatarPreview !== null) {
       formData.append("avatar", avatar);
     }
 
+    // Append each address as a JSON string (server should handle parsing)
+    addresses.forEach((address, index) => {
+      formData.append(`addresses[${index}]`, JSON.stringify(address));
+    });
+
+    for (const address of addresses) {
+      if (!/^\d{6}$/.test(address.zipCode)) {
+        toast.error("Zip code must be 6 digits long.");
+        return;
+      }
+      
+      if (!address.city || !address.district || !address.street || !address.zipCode || !address.contactNumber) {
+        toast.error("All address fields are required.");
+        return;
+      }
+    }
+
+    // Update user information
     updateUserInformation(formData);
   }
+
 
   return (
     <Dashboard>
@@ -170,18 +206,90 @@ const Page = () => {
                 onChange={(e) => setUser({ ...user, phone: e.target.value })}
               />
             </label>
+            <div className="w-full flex flex-col gap-y-4 p-4 border rounded">
+              <label htmlFor="addresses" className="w-full flex flex-col gap-y-4">
+                <p className="text-sm flex flex-row justify-between items-center">
+                  Addresses*
+                  <button
+                    type="button"
+                    className="p-0.5 border rounded-secondary bg-green-500 text-white"
+                    onClick={handleAddAddress}
+                  >
+                    <Plus />
+                  </button>
+                </p>
 
-            {/* address */}
-            <label htmlFor="address" className="w-full flex flex-col gap-y-1">
-              <span className="text-sm">Address</span>
-              <input
-                type="text"
-                name="address"
-                id="address"
-                value={user.address}
-                onChange={(e) => setUser({ ...user, address: e.target.value })}
-              />
-            </label>
+                {addresses?.map((address, index) => (
+                  <div key={index} className="w-full flex flex-col gap-y-2 p-2 border rounded">
+                    <p className="text-sm flex flex-row justify-between items-center">
+                      Address {index + 1}
+                      {index !== 0 && (
+                        <button
+                          type="button"
+                          className="p-0.5 border rounded-secondary bg-red-500 text-white"
+                          onClick={() => handleRemoveAddress(index)}
+                        >
+                          <Minus />
+                        </button>
+                      )}
+                    </p>
+
+                    <input
+                      type="text"
+                      name="city"
+                      placeholder="City"
+                      className="w-full p-2 border rounded"
+                      value={address.city}
+                      onChange={(event) =>
+                        handleAddressChange(index, "city", event.target.value)
+                      }
+                    />
+                    <input
+                      type="text"
+                      name="district"
+                      placeholder="District"
+                      className="w-full p-2 border rounded"
+                      value={address.district}
+                      onChange={(event) =>
+                        handleAddressChange(index, "district", event.target.value)
+                      }
+                    />
+                    <input
+                      type="text"
+                      name="street"
+                      placeholder="Street"
+                      className="w-full p-2 border rounded"
+                      value={address.street}
+                      onChange={(event) =>
+                        handleAddressChange(index, "street", event.target.value)
+                      }
+                    />
+                    <input
+                      type="text"
+                      name="zipCode"
+                      placeholder="Zip Code"
+                      className="w-full p-2 border rounded"
+                      value={address.zipCode}
+                      onChange={(event) =>
+                        handleAddressChange(index, "zipCode", event.target.value)
+                      }
+                    />
+                    <input
+                      type="text"
+                      name="contactNumber"
+                      placeholder="Contact Number"
+                      className="w-full p-2 border rounded"
+                      value={address.contactNumber}
+                      onChange={(event) =>
+                        handleAddressChange(index, "contactNumber", event.target.value)
+                      }
+                    />
+                  </div>
+                ))}
+              </label>
+            </div>
+
+
 
             {/* role */}
             <label htmlFor="role" className="w-full flex flex-col gap-y-1">

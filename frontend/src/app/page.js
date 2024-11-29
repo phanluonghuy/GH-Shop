@@ -1,17 +1,4 @@
-/**
- * Title: Write a program using JavaScript on Page
- * Author: Hasibul Islam
- * Portfolio: https://devhasibulislam.vercel.app
- * Linkedin: https://linkedin.com/in/devhasibulislam
- * GitHub: https://github.com/devhasibulislam
- * Facebook: https://facebook.com/devhasibulislam
- * Instagram: https://instagram.com/devhasibulislam
- * Twitter: https://twitter.com/devhasibulislam
- * Pinterest: https://pinterest.com/devhasibulislam
- * WhatsApp: https://wa.me/8801906315901
- * Telegram: devhasibulislam
- * Date: 03, November 2023
- */
+
 
 "use client";
 
@@ -24,22 +11,40 @@ import NicheExplorer from "@/components/home/NicheExplorer";
 import Steps from "@/components/home/Steps";
 import Trending from "@/components/home/Trending";
 import Main from "@/components/shared/layouts/Main";
+import {useEffect, useState} from "react";
 
 export default function Home() {
-  return (
-    <>
-      <Main>
-        <main className="flex flex-col gap-y-20 w-full">
-          <Banner1 />
-          <Steps />
-          <NewArrivals />
-          <Banner2 />
-          <ExpertChoice />
-          <NicheExplorer />
-          <Trending />
-          <Banner3 />
-        </main>
-      </Main>
-    </>
-  );
+    // Function to extract a specific cookie by its name
+    const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift();
+        return null;
+    };
+    useEffect(() => {
+        const getTokenFromCookie = () => {
+            const token = getCookie('token'); // Assuming your cookie name is 'auth_token'
+            if (token) {
+                localStorage.setItem("accessToken", token);
+            }
+        };
+        getTokenFromCookie();
+    }, []);
+
+    return (
+        <>
+            <Main>
+                <main className="flex flex-col gap-y-20 w-full">
+                    <Banner1/>
+                    <Steps/>
+                    <NewArrivals/>
+                    <Banner2/>
+                    <ExpertChoice/>
+                    <NicheExplorer/>
+                    <Trending/>
+                    <Banner3/>
+                </main>
+            </Main>
+        </>
+    );
 }

@@ -10,6 +10,7 @@ import {
     AccordionBody,
 } from "@material-tailwind/react";
 import { useGetCouponCodeQuery } from "@/services/coupon/couponApi";
+import { useGetShippingFeeQuery } from "@/services/shipping/shippingApi";
 import React, { useEffect, useState } from "react";
 import { useCreatePaymentMutation } from "@/services/payment/paymentApi";
 import { toast } from "react-hot-toast";
@@ -19,79 +20,126 @@ const Payment = () => {
     const { user } = useSelector((state) => state.auth);
     const [cardNumber, setCardNumber] = useState('');
     const [paymentStatus, setPaymentStatus] = useState('success');
-    const [open, setOpen] = React.useState(0);
+    const [open, setOpen] = useState(0);
     const [promoCode, setPromoCode] = useState('');
-    let [code, setCode] = useState('');
-    const [isEditing, setIsEditing] = useState(false);
-    const [address, setAddress] = useState(user?.address || '');
+    const [code, setCode] = useState('');
+    const [address, setAddress] = useState([]);
+    const [shippingFee, setShippingFee] = useState(0);
+    const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
     const [phone, setPhone] = useState(user?.phone || '');
     const [name, setName] = useState(user?.name || '');
+    // const [zipCode, setZipCode] = useState(user?.address[0]?.zipCode || 0);
+    const [zipCode, setZipCode] = useState('');
+    const [selectedOptionIndex, setSelectedOptionIndex] = useState();
+    const [isEditing, setIsEditing] = useState(false);
+    const [newAddress, setNewAddress] = useState({
+        contactNumber: '',
+        street: '',
+        district: '',
+        city: '',
+        zipCode: ''
+    });
+
+    const handleCheckboxChange = (index) => {
+        setSelectedOptionIndex(index);
+        setShippingFee(shippingData.data[index].total_fee);
+    };
+
+    const [shippingData, setShippingData] = useState({ code: 0, status: '', data: [] });
+
     const [cartInfo, setCartInfo] = useState({
         length: user?.cart?.length || 0,
         total: user?.cart?.reduce((acc, { product, quantity }) => acc + product?.price * quantity, 0) || 0,
         tax: 0,
         sumary: 0,
         discount: 0,
+        shippingFee: 0,
     });
-    let { data: fetchApplyCouponData, isLoading: fetchingApplyCoupon, error: fetchApplyCouponError } = useGetCouponCodeQuery(code, { skip: !code });
+
+    const { data: fetchApplyCouponData, isLoading: fetchingApplyCoupon, error: fetchApplyCouponError } = useGetCouponCodeQuery(code, { skip: !code });
+    const { data: fetchShippingFeeData, isLoading: fetchingShippingFee, error: fetchShippingFeeError } = useGetShippingFeeQuery(zipCode, { skip: !zipCode });
 
     const handleOpen = (value) => setOpen(open === value ? 0 : value);
-    cartInfo.tax = cartInfo.total * 0.1;
-    cartInfo.sumary = cartInfo.total + cartInfo.tax - cartInfo.discount;
+
+    const calculateCartSummary = (total, tax, discount, shippingFee) => {
+        return total + tax - discount + shippingFee;
+    };
 
     const handleApplyPromoCode = () => {
         setCode(promoCode);
     };
 
+    const handleEditClick = () => {
+        if (!isEditing) {
+           setNewAddress(address[selectedAddressIndex]);
+           setAddress([]);
+        }
+        else {
+            setAddress([newAddress])};
+        setIsEditing(!isEditing);
+    }
+
+    const handleAddressChange = (event) => {
+        const selectedIndex = event.target.value;
+        setSelectedAddressIndex(selectedIndex);
+        setZipCode(address[selectedIndex].zipCode);
+    };
+
+    const handleAddressSubmit = (e) => {
+        e.preventDefault();
+        setAddress([ newAddress]);
+        // Reset form and exit edit mode
+        setNewAddress({
+          contactNumber: '',
+          street: '',
+          district: '',
+          city: '',
+          zipCode: ''
+        });
+        setIsEditing(false);
+      };
+
     useEffect(() => {
+        setAddress(user.address);
+        if (user.address.length > 0) {
+            setZipCode(user.address[0].zipCode);
+        }
+    }, [user.address]);
+
+    useEffect(() => {
+        if (fetchingShippingFee) {
+            toast.loading("Calculating Shipping Fee...", { id: "shipping" });
+        }
         if (fetchingApplyCoupon) {
             toast.loading("Applying Coupon...", { id: "coupon" });
         }
 
-        // When there's an error (invalid coupon)
-        if (fetchApplyCouponError) {
-            const tax = cartInfo.total * 0.1;
-            let discount = 0;  // Reset the discount
-            const sumary = cartInfo.total + tax - discount;
+        const tax = cartInfo.total * 0.1;
+        let discount = 0;
 
-            setCartInfo((prev) => ({
-                ...prev,
-                tax,
-                discount,
-                sumary,
-            }));
+        if (fetchApplyCouponData && !fetchApplyCouponError) {
+            discount = cartInfo.total * fetchApplyCouponData.data.discountValue / 100;
+            toast.success("Your Coupon has been applied", { id: "coupon" });
+        } else if (fetchApplyCouponError) {
             toast.error("Your Coupon can't apply", { id: "coupon" });
         }
 
-        // When valid coupon data is received
-        if (fetchApplyCouponData && !fetchApplyCouponError) {
-            const tax = cartInfo.total * 0.1;
-            let discount = cartInfo.total * fetchApplyCouponData.data.discountValue/ 100;
-            const sumary = cartInfo.total + tax - discount;
-
-            setCartInfo((prev) => ({
-                ...prev,
-                tax,
-                discount,
-                sumary,
-            }));
-            toast.success("Your Coupon has been applied", { id: "coupon" });
+        if (fetchShippingFeeData) {
+            setShippingData(fetchShippingFeeData.fee);
+            toast.success("Shipping Fee Calculated", { id: "shipping" });
         }
 
-        // Reset cart info if the promo code is cleared or invalid
-        if (!code || !fetchApplyCouponData || fetchApplyCouponError) {
-            const tax = cartInfo.total * 0.1;
-            let discount = 0; // Reset the discount if code is invalid or empty
-            const sumary = cartInfo.total + tax - discount;
+        const newCartInfo = {
+            ...cartInfo,
+            tax,
+            discount,
+            shippingFee,
+            sumary: calculateCartSummary(cartInfo.total, tax, discount, shippingFee),
+        };
 
-            setCartInfo((prev) => ({
-                ...prev,
-                tax,
-                discount,
-                sumary,
-            }));
-        }
-    }, [code, fetchingApplyCoupon, fetchApplyCouponData, fetchApplyCouponError]);
+        setCartInfo(newCartInfo);
+    }, [shippingData, shippingFee, zipCode, code, fetchingApplyCoupon, fetchApplyCouponData, fetchApplyCouponError, fetchShippingFeeData, fetchShippingFeeError]);
+
 
     return (
         <Main>
@@ -110,19 +158,164 @@ const Payment = () => {
                         <div className="grid gap-8 md:grid-cols-3">
                             <div className="md:col-span-2">
                                 <h1 className="text-2xl font-semibold mb-6">Order Confirmation</h1>
-
                                 {/* Shipping Address */}
                                 <div className="bg-white rounded-lg shadow-sm mb-6 p-4">
                                     <div className="flex justify-between items-center mb-4">
                                         <h2 className="font-medium">Contact Information:</h2>
-                                        <button
-                                            className="text-blue-600 hover:underline"
-                                            onClick={() => setIsEditing(!isEditing)}
-                                        >
-                                            {isEditing ? 'Save' : 'Edit'}
-                                        </button>
+                                        <a
+                href="/dashboard/buyer/my-profile"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+            >
+                Manage Address
+            </a>
                                     </div>
-                                    {isEditing ? (
+
+                                    <div className="w-full flex flex-col gap-y-2 p-2 border rounded">
+                                       {/* {address.length> 0 ? ( */}
+
+<div className="w-full flex flex-row justify-between items-center gap-x-2 p-2">
+                                       <p className="text-sm">Select Address</p>
+<button
+    onClick={() => handleEditClick()} // Toggle the editing mode
+    className="text-blue-600 hover:underline"
+>
+    {isEditing ? 'Save' : 'Edit'}
+</button>
+
+                                     </div>
+
+                                  
+                                       {/* ) : (
+                                        <div className="w-full flex flex-row justify-between items-center gap-x-2 p-2">
+                                        <p className="text-sm">Select Address</p>
+                                        <a
+                                            href="/dashboard/buyer/my-profile"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            Edit
+                                        </a>
+                                     </div>
+                                       ) */}
+                                        {/* } */}
+                                        {address.length > 0 ? (
+                                            <select
+                                                className="w-full p-2 border rounded"
+                                                value={selectedAddressIndex || ''}
+                                                onChange={(event) => handleAddressChange(event)}
+                                            >
+                                                <option value="">Select an address</option>
+                                                {address.map((addr, index) => (
+                                                    <option key={index} value={index}>
+                                                        {addr.contactNumber}, {addr.street}, {addr.district}, {addr.city},{' '}
+                                                        {addr.zipCode}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                          )  : (
+                                            <form onSubmit={handleAddressSubmit} className="w-full p-4 border rounded">
+          <div className="mb-2">
+            <input
+              type="text"
+              placeholder="Contact Number"
+              className="w-full p-2 border rounded"
+              value={newAddress?.contactNumber}
+              onChange={(e) =>
+                setNewAddress({ ...newAddress, contactNumber: e.target.value })
+              }
+            />
+          </div>
+          <div className="mb-2">
+            <input
+              type="text"
+              placeholder="Street"
+              className="w-full p-2 border rounded"
+              value={newAddress?.street}
+              onChange={(e) =>
+                setNewAddress({ ...newAddress, street: e.target.value })
+              }
+            />
+          </div>
+          <div className="mb-2">
+            <input
+              type="text"
+              placeholder="District"
+              className="w-full p-2 border rounded"
+              value={newAddress?.district}
+              onChange={(e) =>
+                setNewAddress({ ...newAddress, district: e.target.value })
+              }
+            />
+          </div>
+          <div className="mb-2">
+            <input
+              type="text"
+              placeholder="City"
+              className="w-full p-2 border rounded"
+              value={newAddress?.city}
+              onChange={(e) =>
+                setNewAddress({ ...newAddress, city: e.target.value })
+              }
+            />
+          </div>
+          <div className="mb-2">
+            <input
+              type="text"
+              placeholder="Zip Code"
+              className="w-full p-2 border rounded"
+              value={newAddress?.zipCode}
+              onChange={(e) =>
+                setNewAddress({ ...newAddress, zipCode: e.target.value })
+              }
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
+          >
+            Save Address
+          </button>
+        </form>
+                                          )
+
+                                        }
+                                        <p className="text-sm">Select Shipping</p>
+                                        <div className="shipping-options">
+                                            <div className="options-list">
+                                                {shippingData.data.length > 0 ? (
+                                                    shippingData.data.map((option, index) => (
+                                                        <div key={index} className="option-card border p-4 rounded mb-4 flex items-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                id={`shipping-option-${index}`}
+                                                                checked={selectedOptionIndex === index}
+                                                                onChange={() => handleCheckboxChange(index)}
+                                                                className="mr-4"
+                                                            />
+                                                            <img src={option.carrier_logo} alt={option.carrier_name} className="h-14 w-14 mr-4" />
+                                                            <label htmlFor={`shipping-option-${index}`}>
+                                                                <div className="option-details">
+                                                                    <h3 className="text-md font-semibold">Carrier: {option.carrier_name}</h3>
+                                                                    <p className="text-sm">Service: {option.service}</p>
+                                                                    <p className="text-sm">Expected Time: {option.expected}</p>
+                                                                    <p className="text-lg font-bold">${option.total_fee.toLocaleString()}</p>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="no-options text-center p-4">
+                                                        <p className="text-sm text-gray-500">Không có lựa chọn giao hàng nào.</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* {isEditing ? (
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                                             <input
@@ -165,7 +358,7 @@ const Payment = () => {
                                                 <strong>Name:</strong> {name}
                                             </p>
                                         </div>
-                                    )}
+                                    )} */}
                                 </div>
 
                                 {/* Payment Method */}
@@ -248,10 +441,16 @@ const Payment = () => {
                                                 <span>{cartInfo.discount}</span>
                                             </div>)
                                         }
+                                        {
+                                            cartInfo.shippingFee > 0 && (<div className="flex justify-between">
+                                                <span className="text-gray-600">Shipping Fee</span>
+                                                <span>{cartInfo?.shippingFee}</span>
+                                            </div>)
+                                        }
                                         <hr className="my-2" />
                                         <div className="flex justify-between font-medium">
                                             <span>Sum</span>
-                                            <span>{cartInfo.sumary.toFixed(2)}</span>
+                                            <span>{cartInfo?.sumary.toFixed(2)}</span>
                                         </div>
                                         <input
                                             type="text"
@@ -266,7 +465,7 @@ const Payment = () => {
                                         >
                                             Apply
                                         </button>
-                                        <Purchase cart={user.cart} address={address} phone={phone} name={name} coupon={code}/>
+                                        <Purchase cart={user.cart} address={address} phone={phone} name={name} coupon={code} />
                                         <div className="text-center">
                                             <span className="text-sm text-gray-600">or</span>
                                             <Link href="/" className="block text-blue-600 hover:underline mt-2">
@@ -341,7 +540,7 @@ function Purchase({ cart, address, phone, name, coupon }) {
             <button
                 type="button"
                 className="w-full  px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
-                onClick={() => createPayment({ result, address, phone, name, coupon})}
+                onClick={() => createPayment({ result, address, phone, name, coupon })}
             >
                 Purchase
             </button>

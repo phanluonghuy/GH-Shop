@@ -5,6 +5,7 @@ import { verifyandget_id,createPasswordResetToken,decodeResetToken } from "../ut
 import remove from "../utils/removeUtil";
 import sendEmail from "../utils/emailUtil";
 import Cart from "../models/cartModel";
+import Address from "../models/userAddressModel";
 
 export const userService = {
   signUp: async (req: Request, res: Response): Promise<void> => {
@@ -228,22 +229,46 @@ export const userService = {
     const token = req.headers.authorization?.split(" ")[1];
     const _id = verifyandget_id(token as string);
     const user = req.body;
+
+    const addresses = req.body.addresses.map((address: any) => JSON.parse(address));
+    
+    const address: any = [];
+    
+    // Create address subdocuments
+    addresses.forEach((add: any) => {
+      // Directly pushing the parsed objects into the address array
+      address.push(new Address(
+        {
+          primary: add.primary ?? false,
+          city: add.city,
+          district: add.district,
+          street: add.street,
+          zipCode: add.zipCode,
+          contactNumber: add.contactNumber,
+        }
+      ));
+    });
+
+    
+    
+    // Assign the created addresses to the user object
+    user.address = address;
+
     const exitsUser = await User.findById(_id);
     
-
-    // console.log("req:", req);
-
     if (!req.body.avatar && req.file) {
       await remove(exitsUser!.avatar?.public_id!);
-      console.log("req.avatar:", req.body.avatar);
+      // console.log("req.avatar:", req.body.avatar);
       user!.avatar = {
         url: req.file.path,
         public_id: req.file.filename,
       };
     }
 
-    await User.findByIdAndUpdate(exitsUser?._id, {$set:user}, { runValidators: true });
-
+    const updatedUser = await User.findByIdAndUpdate(exitsUser?._id, {$set:user}, { runValidators: true });
+    // await updatedUser?.updateOne({ $set: { address: address } });
+    // console.log("User:", user);
+    // console.log("Updated user:", updatedUser);
     res.status(200).json({
       acknowledgement: true,
       message: "OK",

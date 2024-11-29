@@ -9,6 +9,7 @@ interface IRequest extends Request {
 
 // Middleware to authorize user based on role
 const authorize = (...roles: string[]): RequestHandler => {
+  // @ts-ignore
   return (req: IRequest, res: Response, next: NextFunction): void => {
     // Check if user role is available
     if (!req.user || !req.user.role) {
