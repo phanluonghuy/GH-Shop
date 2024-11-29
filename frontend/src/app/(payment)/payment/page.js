@@ -28,7 +28,8 @@ const Payment = () => {
     const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
     const [phone, setPhone] = useState(user?.phone || '');
     const [name, setName] = useState(user?.name || '');
-    const [zipCode, setZipCode] = useState(user?.address[0]?.zipCode || 0);
+    // const [zipCode, setZipCode] = useState(user?.address[0]?.zipCode || 0);
+    const [zipCode, setZipCode] = useState('');
     const [selectedOptionIndex, setSelectedOptionIndex] = useState();
     const [isEditing, setIsEditing] = useState(false);
     const [newAddress, setNewAddress] = useState({

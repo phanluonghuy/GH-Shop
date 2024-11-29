@@ -22,21 +22,12 @@ interface CustomRequest extends Request {
 export const paymentService = {
   createPayment: async (req: CustomRequest, res: Response) => {
     try {
-      // const coupon = Coupon.findOne({ code: req.body.coupon });
-      // if (coupon) {
-      //   console.log(coupon.);
-      // }
-      // console.log(req.body);
-      // await Coupon.findOne( { $regex: new RegExp(`^${req.params.id}$`, 'i') }).then((coupon) => {  
-      //     console.log(coupon);
-      // });
       const coupon = await Coupon.findOne({ 
         code: { $regex: new RegExp(`^${req.body.coupon}$`, 'i') } 
       });
       
       let discount = 1 - (coupon?.discountValue || 0) / 100;
   
-      // console.log(discount);
   
       const token = req.headers.authorization?.split(" ")[1];
       const _id = verifyandget_id(token as string);
@@ -47,8 +38,7 @@ export const paymentService = {
           name: req.body.name,
         },
       });
-      // console.log(user);
-      // console.log(req.body.result);
+
       if (!user) {
         res.status(404).json({
           acknowledgement: false,
@@ -84,14 +74,14 @@ export const paymentService = {
           };
         }
       );
-  
+      
+      const PORT = process.env.PORT || 3000;
       const session = await stripe.checkout.sessions.create({
         line_items: lineItems,
         mode: "payment",
         success_url: `${process.env.ORIGIN_URL}/payment-success`,
         cancel_url: `${process.env.ORIGIN_URL}/payment-failed`,
       });
-
 
   
       // Create purchase for user
