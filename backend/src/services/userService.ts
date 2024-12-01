@@ -389,5 +389,36 @@ export const userService = {
         await Cart.findByIdAndDelete(cart);
       });
     }
-  }
+  },
+
+  getLoyaltyPoints: async (req: Request, res: Response): Promise<void> => {
+    const token = req.headers.authorization?.split(" ")[1];
+    const _id = verifyandget_id(token as string);
+
+    try {
+      const user = await User.findById(_id);
+      if (!user) {
+        res.status(404).json({
+          acknowledgement: false,
+          message: "Error",
+          description: "User not found",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        acknowledgement: true,
+        message: "Success",
+        description: "Loyalty points retrieved successfully",
+        data: { loyaltyPoints: user.loyaltyPoints },
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({
+        acknowledgement: false,
+        message: "Error",
+        description: "Failed to retrieve loyalty points",
+      });
+    }
+  },
 };

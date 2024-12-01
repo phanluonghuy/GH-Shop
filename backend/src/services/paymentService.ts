@@ -22,13 +22,12 @@ interface CustomRequest extends Request {
 export const paymentService = {
   createPayment: async (req: CustomRequest, res: Response) => {
     try {
-      const coupon = await Coupon.findOne({ 
-        code: { $regex: new RegExp(`^${req.body.coupon}$`, 'i') } 
+      const coupon = await Coupon.findOne({
+        code: { $regex: new RegExp(`^${req.body.coupon}$`, 'i') }
       });
-      
+
       let discount = 1 - (coupon?.discountValue || 0) / 100;
-  
-  
+
       const token = req.headers.authorization?.split(" ")[1];
       const _id = verifyandget_id(token as string);
       const user = await User.findByIdAndUpdate(_id, {
@@ -47,34 +46,34 @@ export const paymentService = {
         });
         return;
       }
-  
+
       const lineItems: any = req.body.result.map(
-        (item: {
-          name: string;
-          thumbnail: string;
-          description: string;
-          pid: string;
-          price: number;
-          quantity: number;
-        }) => {
-          return {
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: item.name,
-                images: [item.thumbnail],
-                description: item.description,
-                metadata: {
-                  id: item.pid,
+          (item: {
+            name: string;
+            thumbnail: string;
+            description: string;
+            pid: string;
+            price: number;
+            quantity: number;
+          }) => {
+            return {
+              price_data: {
+                currency: "usd",
+                product_data: {
+                  name: item.name,
+                  images: [item.thumbnail],
+                  description: item.description,
+                  metadata: {
+                    id: item.pid,
+                  },
                 },
+                unit_amount: item.price * 100,
               },
-              unit_amount: item.price * 100 ,
-            },
-            quantity: item.quantity,
-          };
-        }
+              quantity: item.quantity,
+            };
+          }
       );
-      
+
       const PORT = process.env.PORT || 3000;
       const session = await stripe.checkout.sessions.create({
         line_items: lineItems,
@@ -83,51 +82,60 @@ export const paymentService = {
         cancel_url: `${process.env.ORIGIN_URL}/payment-failed`,
       });
 
-  
+      // Calculate total purchase amount
+      const totalAmount = req.body.result.reduce((total: number, item: { price: number; quantity: number }) => {
+        return total + item.price * item.quantity;
+      }, 0) * discount;
+
+      // Award points (e.g., 1 point per $10 spent)
+      const pointsEarned = Math.floor(totalAmount / 10);
+
       // Create purchase for user
       const purchase: any = await Purchase.create({
-          customer: req.user?._id,
-          customerId: session.id,
-          orderId: session.id,
-          totalAmount: session.amount_total,
-          automatic_payment_methods: {
-              enabled: true,
-          },
-          products: req.body.result.map((item: { pid: string; quantity: number }) => ({
-              product: item.pid,
-              quantity: item.quantity,
-          })),
+        customer: req.user?._id,
+        customerId: session.id,
+        orderId: session.id,
+        totalAmount: session.amount_total,
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        products: req.body.result.map((item: { pid: string; quantity: number }) => ({
+          product: item.pid,
+          quantity: item.quantity,
+        })),
       });
-  
-      // Update user's purchases, products, and empty cart
+
+      // Update user's purchases, products, empty cart, and loyalty points
       await User.findByIdAndUpdate(req.user?._id, {
-          $push: { purchases: purchase._id },
-          $set: { cart: [] },
+        $push: { purchases: purchase._id },
+        $set: { cart: [] },
+        $inc: { loyaltyPoints: pointsEarned },
       });
-  
+
       // Add product IDs to user's products array
       req.body.result.forEach(async (item: { pid: string }) => {
-          await User.findByIdAndUpdate(req.user?._id, {
-              $push: { products: item.pid },
-          });
+        await User.findByIdAndUpdate(req.user?._id, {
+          $push: { products: item.pid },
+        });
       });
-  
+
       // Remove carts that match cart IDs
       req.body.result.forEach(async (cart: { cid: string }) => {
-          await Cart.findByIdAndDelete(cart.cid);
+        await Cart.findByIdAndDelete(cart.cid);
       });
-  
+
       // Add user to products' buyers array
       req.body.result.forEach(async (product: { pid: string }) => {
-          await Product.findByIdAndUpdate(product.pid, {
-              $push: { buyers: req.user?._id },
-          });
+        await Product.findByIdAndUpdate(product.pid, {
+          $push: { buyers: req.user?._id },
+        });
       });
-  
+
       res.status(201).json({
         acknowledgement: true,
         message: "Ok",
-        description: "Payment created successfully",
+        description: "Payment created successfully, points awarded",
+        pointsEarned,
         url: session.url,
       });
     } catch (error: any) {
@@ -139,6 +147,7 @@ export const paymentService = {
       });
     }
   },
+
   getShippingFee : async (req: CustomRequest, res: Response) => {
     // console.log(req.params.zipCode);
     const result = getZipCodeInfo(req.params.zipCode);
