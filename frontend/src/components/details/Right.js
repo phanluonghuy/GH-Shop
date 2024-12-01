@@ -32,6 +32,7 @@ const Right = ({ product }) => {
               </span>
             </span>
             <div className="border-l h-7 rounded" />
+
             <span className="text-xs flex items-center gap-x-1 px-2 h-full bg-zinc-50 rounded">
               <AiFillStar className="w-4 h-4 text-yellow-500" /> {product?.reviews?.length}
             </span>
@@ -41,6 +42,18 @@ const Right = ({ product }) => {
       </article>
       <Description product={product} />
       <Policies />
+      {/* Displaying stock information */}
+      <div className="flex flex-col gap-y-4">
+        <h2 className="text-xl font-semibold">Stock Availability</h2>
+        <ul>
+          {product?.stock?.variations?.map((variation) => (
+              <li key={variation._id.$oid} className="flex justify-between">
+                <span>{variation.color} - {variation.size}</span>
+                <span>{variation.quantity} units available</span>
+              </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 };

@@ -421,4 +421,61 @@ export const userService = {
       });
     }
   },
+
+  awardLoyaltyPoints: async (userId: string, points: number): Promise<void> => {
+    try {
+      const user = await User.findById(userId);
+      if (!user) throw new Error("User not found");
+
+      user.loyaltyPoints += points;
+      await user.save();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  },
+
+  redeemLoyaltyPoints: async (req: Request, res: Response): Promise<void> => {
+    const token = req.headers.authorization?.split(" ")[1];
+    const _id = verifyandget_id(token as string);
+
+    const { pointsToRedeem } = req.body;
+
+    try {
+      const user = await User.findById(_id);
+      if (!user) {
+        res.status(404).json({
+          acknowledgement: false,
+          message: "Error",
+          description: "User not found",
+        });
+        return;
+      }
+
+      if (user.loyaltyPoints < pointsToRedeem) {
+        res.status(400).json({
+          acknowledgement: false,
+          message: "Error",
+          description: "Insufficient loyalty points",
+        });
+        return;
+      }
+
+      user.loyaltyPoints -= pointsToRedeem;
+      await user.save();
+
+      res.status(200).json({
+        acknowledgement: true,
+        message: "Success",
+        description: "Loyalty points redeemed successfully",
+        data: { loyaltyPoints: user.loyaltyPoints },
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({
+        acknowledgement: false,
+        message: "Error",
+        description: "Failed to redeem loyalty points",
+      });
+    }
+  },
 };

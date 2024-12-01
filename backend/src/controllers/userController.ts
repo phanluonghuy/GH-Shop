@@ -122,5 +122,14 @@ export const userController = {
     } finally {
       console.log(`Route: ${req.url} || Method: ${req.method}`);
     }
+  },
+  redeemLoyaltyPoints : async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await userService.redeemLoyaltyPoints(req, res);
+    } catch (error) {
+      next(error);
+    } finally {
+      console.log(`Route: ${req.url} || Method: ${req.method}`);
+    }
   }
 }
