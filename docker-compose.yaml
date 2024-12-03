@@ -25,7 +25,7 @@ services:
     environment:
       - SERVER_URL=http://localhost
       - PORT=8080
-      - ORIGIN_URL=http://localhost:3000
+      - ORIGIN_URL=http://localhost
       - MONGO_URI=mongodb://administrator123:Congtinh0109%40%40@20.255.97.95:27017/
       - TOKEN_SECRET=150131091ad22d4e4acecd1340fef3d6cef0477a3745520756e19c9f2021f37f18bb45aa135049ee36d4ad7439dc8cad72d928c95332c6b8da59c56521d85a56
       - CLOUD_NAME=deynivwng
@@ -36,6 +36,19 @@ services:
       - SHIPPING_FEE_API=https://api.goship.io/api/ext_v1/rates
       - GOOGLE_CLIENT_ID=332965588325-po6hu1vatm9da0g9p3up52es3g3ofkui.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
+    networks:
+      - gh-shop
+  nginx:
+    container_name: gh-shop-nginx
+    image: nginx:1.27.3-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - backend
     networks:
       - gh-shop
 

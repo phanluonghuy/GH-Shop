@@ -1,27 +1,26 @@
-FROM node:22.7.0-alpine AS builder
+FROM node:22.7.0-alpine AS base
 
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
+COPY package*.json yarn.lock* ./
+RUN yarn --frozen-lockfile
 
-COPY package*.json ./
-
-RUN npm ci
-
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN yarn build
 
-# Disable telemetry to reduce unnecessary logs
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# Disable SWC Minification (optional)
-RUN echo 'module.exports = { swcMinify: false }' > next.config.js
-
-RUN npm run build
-
-FROM node:22.7.0-alpine
-
+FROM base AS production
 WORKDIR /app
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
-COPY --from=builder /app /app
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+ENV NEXT_SHARP_PATH=/app/node_modules/sharp
+
+CMD ["node", "server.js"]

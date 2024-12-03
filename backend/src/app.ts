@@ -33,7 +33,7 @@ const SESSION_SECRET = process.env.TOKEN_SECRET || "150131091ad22d4e4acecd1340fe
 
 app.use(
     cors({
-        origin: process.env.ORIGIN_URL,
+        origin: [process.env.ORIGIN_URL as string, "http://localhost"],
         methods: "GET, PATCH, POST, DELETE",
         preflightContinue: false,
         optionsSuccessStatus: 204,
