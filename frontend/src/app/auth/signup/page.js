@@ -75,7 +75,7 @@ const Signup = () => {
 
         if (!e.target.phone.value.match(phoneRegex)) {
             alert(
-                "Phone number must start with +88 and have a total length of 14 digits."
+                "Phone number must start with +84 and have 9 or 10 digits"
             );
             return;
         }

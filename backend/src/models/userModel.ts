@@ -94,14 +94,17 @@ const userSchema = new Schema<IUser>(
         phone: {
             type: String,
             default: "N/A",
-            trim: true,
             validate: {
-                validator: (value: string) =>
-                    value === "N/A" ||
-                    validator.isMobilePhone(value, "vi-VN", {strictMode: true}),
+                validator: (value: string) => {
+                    if (value === "N/A") return true;
+                    const regexPhoneNumber = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
+                    return value.match(regexPhoneNumber) ? true : false;
+                },
+                // value === "N/A" || validator.isMobilePhone(value, "vi-VN", { strictMode: true }),
                 message:
-                    "Phone number {VALUE} is not valid. Please, retry like +84xxxxxxxxx",
+                    "Phone number {VALUE} is not valid. Please, retry like 84xxxxxxxxx or 0xxxxxxxxx",
             },
+
             // type: String,
             // required: [
             //   true,
