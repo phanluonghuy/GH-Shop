@@ -54,6 +54,6 @@ userRouter.get(
     }
 );
 
-userRouter.post('redeem-loyalty-points/:id', verify, authorize("admin", "buyer", "seller"), userController.redeemLoyaltyPoints);
+userRouter.post('redeem-loyalty-points/:id', verify, authorize("admin", "buyer"), userController.redeemLoyaltyPoints);
 
 export default userRouter;

@@ -6,7 +6,7 @@ import {reviewController} from "../controllers/reviewController";
 
 const reviewRouter = express.Router();
 
-reviewRouter.post('/add-review', verify, authorize('buyer', "seller", "admin"), reviewController.addReview);
+reviewRouter.post('/add-review', verify, authorize('buyer', "admin"), reviewController.addReview);
 
 reviewRouter.get('/get-reviews', reviewController.getReviews);
 

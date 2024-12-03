@@ -30,13 +30,13 @@ const UserUpdate = ({user}) => {
                     id: user?._id,
                     body: {
                         role:
-                            (user?.role === "buyer" && "seller") ||
-                            (user?.role === "seller" && "admin"),
+                            (user?.role === "buyer" && "admin") ||
+                            (user?.role === "admin" && "admin"),
                     },
                 })
             }
         >
-            {(user?.role === "buyer" || user?.role === "seller") &&
+            {(user?.role === "buyer") &&
                 (userUpdating ? <Spinner/> : <User/>)}
         </button>
     );

@@ -83,10 +83,6 @@ const Page = () => {
             role: event.target.role.value,
         };
 
-        // Add 'status' property for seller
-        if (updatedUser.role === "seller") {
-            updatedUser.status = "inactive";
-        }
 
         // Initialize FormData
         const formData = new FormData();

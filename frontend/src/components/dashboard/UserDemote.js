@@ -30,8 +30,7 @@ const UserDemote = ({user}) => {
                     id: user?._id,
                     body: {
                         role:
-                            (user?.role === "admin" && "buyer") ||
-                            (user?.role === "buyer" && "seller"),
+                            (user?.role === "admin" && "buyer"),
                     },
                 })
             }

@@ -66,15 +66,7 @@ const Page = () => {
                     >
                         Buyer
                     </button>
-                    <button
-                        type="button"
-                        className={`bg-cyan-50 border border-cyan-900 rounded-secondary text-cyan-900 px-4 py-1 text-xs ${
-                            filter === "seller" && "bg-cyan-900 !text-white"
-                        }`}
-                        onClick={() => setFilter("seller")}
-                    >
-                        Seller
-                    </button>
+
                 </div>
                 <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                     {filteredUsers?.map((user) => (
@@ -98,12 +90,6 @@ const Page = () => {
                                 {user?.role === "buyer" && (
                                     <span
                                         className="bg-indigo-50 border border-indigo-900 px-2 rounded-secondary text-indigo-900 text-xs uppercase w-fit">
-                    {user?.role}
-                  </span>
-                                )}
-                                {user?.role === "seller" && (
-                                    <span
-                                        className="bg-cyan-50 border border-cyan-900 px-2 rounded-secondary text-cyan-900 text-xs uppercase w-fit">
                     {user?.role}
                   </span>
                                 )}
@@ -180,7 +166,7 @@ function DeleteUser({user}) {
 
     return (
         <>
-            {!(user?.role === "admin" || user?.role === "seller") && (
+            {!(user?.role === "admin") && (
                 <button
                     type="button"
                     className="flex flex-row gap-x-1 items-center whitespace-nowrap"

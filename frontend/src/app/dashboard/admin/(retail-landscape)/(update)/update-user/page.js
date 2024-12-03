@@ -101,7 +101,7 @@ const Page = () => {
         };
 
         // Add 'status' property for seller
-        if (updatedUser.role === "seller") {
+        if (updatedUser.role === "admin") {
             updatedUser.status = "inactive";
         }
 

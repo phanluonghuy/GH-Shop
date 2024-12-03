@@ -56,49 +56,6 @@ const Dashboard = ({children}) => {
         ];
     }
 
-    if (user?.role === "seller") {
-        routes = [
-            {
-                name: "My Profile",
-                paths: [
-                    {
-                        name: "View Profile",
-                        path: "/dashboard/seller/my-profile",
-                    },
-                ],
-            },
-            {
-                name: "My Assets",
-                paths: [
-                    {
-                        name: "View brand",
-                        path: "/dashboard/seller/my-brand",
-                    },
-                    {
-                        name: "View Category",
-                        path: "/dashboard/seller/my-category",
-                    },
-                    {
-                        name: "View Store",
-                        path: "/dashboard/seller/my-store",
-                    },
-                ],
-            },
-            {
-                name: "My Products",
-                paths: [
-                    {
-                        name: "Add Product",
-                        path: "/dashboard/seller/add-product",
-                    },
-                    {
-                        name: "List Products",
-                        path: "/dashboard/seller/list-products",
-                    },
-                ],
-            },
-        ];
-    }
 
     if (user?.role === "admin") {
         routes = [
