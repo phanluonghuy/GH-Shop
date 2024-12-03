@@ -29,9 +29,9 @@ userRouter.get(
     '/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     async (req, res) => {
+        console.log("Auth google callback");
         // @ts-ignore
         const {name, email} = req.user; // Extract name and email from req.user
-        console.log('User authenticated:', name, email);
         const user = await User.findOne({email: email});// Log or handle user data
         if (!user) {
             return res.redirect(`${process.env.ORIGIN_URL}/`);
@@ -43,7 +43,12 @@ userRouter.get(
             role: user.role,
             status: user.status,
         });
-        res.cookie('token', tokenAccess);// Set the token in a cookie
+        res.cookie('token', tokenAccess,
+        //     {
+        //     maxAge : 10000,
+        //     secure: true
+        // }
+        );// Set the token in a cookie
         res.redirect(`${process.env.ORIGIN_URL}/`);// Redirect to the client URL
     }
 );

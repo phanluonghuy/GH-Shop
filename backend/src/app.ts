@@ -19,6 +19,7 @@ import reviewRouter from "./routes/reviewRoute";
 import couponRouter from "./routes/couponRoute";
 import passport from "passport";
 import './googleAuthConfig';
+import dashboardRouter from "./routes/dashboardRouter";
 
 // Load environment variables
 dotenv.config();
@@ -62,6 +63,7 @@ app.use("/api/payment", paymentRouter);
 app.use("/api/purchase", purchaseRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/coupon", couponRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 
 mongoose

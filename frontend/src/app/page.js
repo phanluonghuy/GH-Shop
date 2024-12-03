@@ -14,6 +14,10 @@ import Main from "@/components/shared/layouts/Main";
 import {useEffect, useState} from "react";
 
 export default function Home() {
+    const [token, setToken] = useState(null);
+    const deleteCookie = (name) => {
+        document.cookie = `${name}=; max-age=0; path=/`;  // Set cookie with max-age 0 to delete it
+    };
     // Function to extract a specific cookie by its name
     const getCookie = (name) => {
         const value = `; ${document.cookie}`;
@@ -23,13 +27,15 @@ export default function Home() {
     };
     useEffect(() => {
         const getTokenFromCookie = () => {
-            const token = getCookie('token'); // Assuming your cookie name is 'auth_token'
+            setToken(getCookie('token')); // Assuming your cookie name is 'auth_token'
             if (token) {
                 localStorage.setItem("accessToken", token);
+                deleteCookie('token');
+                window.location.reload();
             }
         };
         getTokenFromCookie();
-    }, []);
+    }, [token]);
 
     return (
         <>

@@ -1,17 +1,4 @@
-/**
- * Title: Write a program using JavaScript on Sidebar
- * Author: Hasibul Islam
- * Portfolio: https://devhasibulislam.vercel.app
- * Linkedin: https://linkedin.com/in/devhasibulislam
- * GitHub: https://github.com/devhasibulislam
- * Facebook: https://facebook.com/devhasibulislam
- * Instagram: https://instagram.com/devhasibulislam
- * Twitter: https://twitter.com/devhasibulislam
- * Pinterest: https://pinterest.com/devhasibulislam
- * WhatsApp: https://wa.me/8801906315901
- * Telegram: devhasibulislam
- * Date: 09, November 2023
- */
+
 
 "use client";
 
@@ -118,6 +105,15 @@ const Sidebar = () => {
   if (user?.role === "admin") {
     routes = [
       {
+        name: "Dashboard",
+        paths: [
+          {
+            name: "View Dashboard",
+            path: "/dashboard/admin/dashboard",
+          },
+        ],
+      },
+      {
         name: "My Profile",
         paths: [
           {
@@ -220,7 +216,7 @@ const Sidebar = () => {
   }
 
   return (
-    <section className="md:col-span-4 col-span-12 overflow-hidden bg-white z-50 min-w-full max-w-lg px-2 overflow-y-auto md:block hidden">
+    <section className="md:col-span-3 col-span-12 overflow-hidden bg-white z-50 min-w-full max-w-lg px-2 overflow-y-auto md:block hidden">
       <div className="w-full h-full flex flex-col gap-y-4">
         {routes.map((route, index) => (
           <div

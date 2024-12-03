@@ -1,17 +1,4 @@
-/**
- * Title: Write a program using JavaScript on Auth
- * Author: Hasibul Islam
- * Portfolio: https://devhasibulislam.vercel.app
- * Linkedin: https://linkedin.com/in/devhasibulislam
- * GitHub: https://github.com/devhasibulislam
- * Facebook: https://facebook.com/devhasibulislam
- * Instagram: https://instagram.com/devhasibulislam
- * Twitter: https://twitter.com/devhasibulislam
- * Pinterest: https://pinterest.com/devhasibulislam
- * WhatsApp: https://wa.me/8801906315901
- * Telegram: devhasibulislam
- * Date: 08, November 2023
- */
+
 
 import Signup from "@/components/icons/Signup";
 import Link from "next/link";
@@ -20,10 +7,10 @@ import OutsideClick from "../OutsideClick";
 import User from "@/components/icons/User";
 import Signin from "@/components/icons/Signin";
 import ForgotPassword from "@/components/icons/ForgotPassword";
-import Logout from "@/components/icons/Logout";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import { CgProfile } from "react-icons/cg";
+
 import { FiLogOut } from "react-icons/fi";
 
 import { FaCrown, FaMedal, FaStar, FaGem, FaTrophy } from "react-icons/fa";
@@ -141,12 +128,12 @@ const Auth = () => {
                   className="whitespace-nowrap"
                   onClick={() => {
                     user?.role === "admin"
-                      ? window.open("/dashboard", "_self")
+                      ? window.open("/dashboard/admin/dashboard", "_self")
                       : window.open("/dashboard/buyer/my-profile", "_self");
                   }}
                 >
                   <h2 className="text-sm">Profile</h2>
-                  <p className="text-xs">Managment your profile</p>
+                  <p className="text-xs">Management your profile</p>
                 </article>
               </div>
               <div className="w-full flex flex-row items-center gap-x-2 p-2 border border-transparent hover:border-black rounded cursor-pointer">

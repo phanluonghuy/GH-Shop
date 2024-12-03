@@ -230,7 +230,11 @@ export const userService = {
     const _id = verifyandget_id(token as string);
     const user = req.body;
 
-    const addresses = req.body.addresses.map((address: any) => JSON.parse(address));
+    let addresses = [];
+    if (req.body.addresses) {
+      addresses = req.body.addresses.map((address: any) => JSON.parse(address));
+    }
+
     
     const address: any = [];
     
