@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express, {Application} from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import session from "express-session";
@@ -32,12 +32,12 @@ const SESSION_SECRET = process.env.TOKEN_SECRET || "150131091ad22d4e4acecd1340fe
 
 
 app.use(
-  cors({
-    origin: process.env.ORIGIN_URL,
-    methods: "GET, PATCH, POST, DELETE",
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  })
+    cors({
+        origin: process.env.ORIGIN_URL,
+        methods: "GET, PATCH, POST, DELETE",
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+    })
 );
 app.use(express.json());
 app.use(error);
@@ -67,17 +67,17 @@ app.use("/api/dashboard", dashboardRouter);
 
 
 mongoose
-  .connect(MONGO_URI as string)
-  .then(() => {
-    console.log("Connected to MongoDB");
-    app.listen(PORT, () => {
-      console.log(`Backend running on ${SERVER_URL}:${PORT}`);
+    .connect(MONGO_URI as string)
+    .then(() => {
+        console.log("Connected to MongoDB");
+        app.listen(PORT, () => {
+            console.log(`Backend running on ${SERVER_URL}:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error("Error connecting to MongoDB:", err);
     });
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
 
-app.get("/", (req, res) => { 
+app.get("/", (req, res) => {
     res.send("Hello World");
 });

@@ -1,6 +1,5 @@
-import {NextFunction} from "express";
+import {NextFunction, Request, Response} from "express";
 import {dashboardService} from "../services/dashboardService";
-import { Request, Response } from "express";
 
 export const dashboardController = {
     getTotalPurchase: async (req: Request, res: Response, next: NextFunction) => {

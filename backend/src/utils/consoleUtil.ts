@@ -1,5 +1,4 @@
 /* external import */
-import * as colors from 'colors';
 
 export const successMessage = (message: string): void => {
     console.log(`[Success] - ${message}`.cyan);

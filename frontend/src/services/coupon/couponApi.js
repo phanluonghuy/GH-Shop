@@ -1,6 +1,4 @@
-
-
-const { canimApi } = require("../canim");
+const {canimApi} = require("../canim");
 
 const couponApi = canimApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -23,6 +21,9 @@ const couponApi = canimApi.injectEndpoints({
             query: () => ({
                 url: "/coupon/get-coupons",
                 method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
             }),
 
             providesTags: ["Coupon"],
@@ -30,7 +31,7 @@ const couponApi = canimApi.injectEndpoints({
 
         // update store
         updateCoupon: builder.mutation({
-            query: ({ id, body }) => ({
+            query: ({id, body}) => ({
                 url: `/coupon/update-coupon/${id}`,
                 method: "PATCH",
                 headers: {
@@ -47,6 +48,9 @@ const couponApi = canimApi.injectEndpoints({
             query: (id) => ({
                 url: `/coupon/get-coupon/${id}`,
                 method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
             }),
 
             providesTags: ["Coupon"],
@@ -56,6 +60,9 @@ const couponApi = canimApi.injectEndpoints({
             query: (code) => ({
                 url: `/coupon/apply-coupon/${code}`,
                 method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
             }),
 
             // providesTags: ["Coupon","Code"],

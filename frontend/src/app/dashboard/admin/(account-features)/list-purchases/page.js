@@ -1,21 +1,16 @@
 "use client";
 
-import Inform from "@/components/icons/Inform";
 import View from "@/components/icons/View";
 import Modal from "@/components/shared/Modal";
 import Dashboard from "@/components/shared/layouts/Dashboard";
 import {setPurchases} from "@/features/purchase/purchaseSlice";
-import {
-    useGetAllPurchasesQuery,
-    useUpdatePurchaseStatusMutation,
-} from "@/services/purchase/purchaseApi";
+import {useGetAllPurchasesQuery, useUpdatePurchaseStatusMutation,} from "@/services/purchase/purchaseApi";
 import Image from "next/image";
-import Link from "next/link";
 import React, {useEffect, useMemo, useState} from "react";
 import {toast} from "react-hot-toast";
 import {useDispatch} from "react-redux";
-import {Button, IconButton, Typography} from "@material-tailwind/react";
-import {ArrowRightIcon, ArrowLeftIcon} from "@heroicons/react/24/outline";
+import {Button, Typography} from "@material-tailwind/react";
+import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/outline";
 
 const Page = () => {
     const {isLoading, data, error} = useGetAllPurchasesQuery();
@@ -46,8 +41,8 @@ const Page = () => {
                     let d = new Date();
                     var day = d.getDay(), diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
                     const startOfWeek = new Date(d.setDate(diff));
-                    console.log(startOfWeek);
-                    console.log(purchaseDate);
+                    // console.log(startOfWeek);
+                    // console.log(purchaseDate);
                     return purchaseDate >= startOfWeek;
                 }
                 if (timeRange === "thisMonth") {

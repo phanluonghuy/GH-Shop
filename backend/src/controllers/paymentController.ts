@@ -1,6 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import { paymentService } from "../services/paymentService";
-
+import {paymentService} from "../services/paymentService";
 
 
 export const paymentController = {

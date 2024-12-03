@@ -1,22 +1,32 @@
 'use client'
 
-import React, { useEffect, useState } from "react";
-import { Eye, ShoppingCart, ShoppingBag, Users } from 'lucide-react'
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js'
-import { Line, Bar } from 'react-chartjs-2'
+import React, {useEffect, useState} from "react";
+import {Eye, ShoppingBag, ShoppingCart, Users} from 'lucide-react'
+import {
+    BarElement,
+    CategoryScale,
+    Chart as ChartJS,
+    Legend,
+    LinearScale,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip
+} from 'chart.js'
+import {Bar, Line} from 'react-chartjs-2'
 import Dashboard from "@/components/shared/layouts/Dashboard";
 import {useGetRevenueQuery, useGetTotalPurchaseQuery} from "@/services/dashboard/dashboardApi";
 import {toast} from "react-hot-toast";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend)
 
-const Card = ({ children, className, ...props }) => (
+const Card = ({children, className, ...props}) => (
     <div className={`bg-white rounded-lg shadow ${className}`} {...props}>
         {children}
     </div>
 )
 
-const CardContent = ({ children, className, ...props }) => (
+const CardContent = ({children, className, ...props}) => (
     <div className={`p-6 ${className}`} {...props}>
         {children}
     </div>
@@ -79,8 +89,6 @@ const barChartOptions = {
 // }
 
 
-
-
 const Page = () => {
     const [totalPurchase, setTotalPurchase] = useState(0);
     const [totalPurchaseAmount, setTotalPurchaseAmount] = useState(0);
@@ -131,7 +139,7 @@ const Page = () => {
         if (purchaseError) {
             toast.error(purchaseError?.data?.description, {id: "totalPurchase"});
         }
-        console.log("test");
+        // console.log("test");
     }, [purchaseData, purchaseError, purchaseLoading]);
 
     useEffect(() => {
@@ -159,7 +167,7 @@ const Page = () => {
                         tension: 0.4, // Smooth line
                     },
                     {
-                        label:  selectedPeriod === 'Week' ? "Last Week" : "Last Month",
+                        label: selectedPeriod === 'Week' ? "Last Week" : "Last Month",
                         data: revenueDataLast.map(entry => entry.totalRevenue),
                         borderColor: 'rgb(147, 197, 253)',
                         backgroundColor: 'rgba(147, 197, 253, 0.5)',
@@ -170,9 +178,9 @@ const Page = () => {
             };
             setLineChart(lineChartData);
         }
-        console.log("test");
+        // console.log("test");
 
-    }, [selectedPeriod,revenueData, revenueError, revenueLoading]);
+    }, [selectedPeriod, revenueData, revenueError, revenueLoading]);
 
 
     return (
@@ -187,7 +195,7 @@ const Page = () => {
                                 <Eye className="w-6 h-6 text-blue-500"/>
                             </div>
                             <div className="space-y-1">
-                                <h2 className="text-2xl font-bold">{totalPurchaseAmount.toLocaleString('en-US',{
+                                <h2 className="text-2xl font-bold">{totalPurchaseAmount.toLocaleString('en-US', {
                                     style: 'currency',
                                     currency: 'USD'
                                 })}</h2>
@@ -215,14 +223,14 @@ const Page = () => {
                         </CardContent>
                     </Card>
 
-                     {/*Users Card*/}
+                    {/*Users Card*/}
                     <Card>
                         <CardContent>
                             <div className="rounded-full bg-blue-50 w-12 h-12 flex items-center justify-center mb-4">
                                 <ShoppingCart className="w-6 h-6 text-blue-500"/>
                             </div>
                             <div className="space-y-1">
-                                <h2 className="text-2xl font-bold">{bestBrandPurchase.toLocaleString('en-US',{
+                                <h2 className="text-2xl font-bold">{bestBrandPurchase.toLocaleString('en-US', {
                                     style: 'currency',
                                     currency: 'USD'
                                 })}</h2>
@@ -273,26 +281,26 @@ const Page = () => {
                                     {/*<p className="text-sm text-gray-500">12.04.2022 - 12.05.2022</p>*/}
                                 </div>
 
-                                    <div className="flex gap-2">
-                                        {/*<button*/}
-                                        {/*    className={`px-3 py-1 rounded-lg ${selectedPeriod === 'Day' ? 'bg-blue-500 text-white' : 'bg-white'}`}*/}
-                                        {/*    onClick={() => handleClick('Day')}*/}
-                                        {/*>*/}
-                                        {/*    Day*/}
-                                        {/*</button>*/}
-                                        <button
-                                            className={`px-3 py-1 rounded-lg ${selectedPeriod === 'Week' ? 'bg-blue-500 text-white' : 'bg-white'}`}
-                                            onClick={() => handleClick('Week')}
-                                        >
-                                            Week
-                                        </button>
-                                        <button
-                                            className={`px-3 py-1 rounded-lg ${selectedPeriod === 'Month' ? 'bg-blue-500 text-white' : 'bg-white'}`}
-                                            onClick={() => handleClick('Month')}
-                                        >
-                                            Month
-                                        </button>
-                                    </div>
+                                <div className="flex gap-2">
+                                    {/*<button*/}
+                                    {/*    className={`px-3 py-1 rounded-lg ${selectedPeriod === 'Day' ? 'bg-blue-500 text-white' : 'bg-white'}`}*/}
+                                    {/*    onClick={() => handleClick('Day')}*/}
+                                    {/*>*/}
+                                    {/*    Day*/}
+                                    {/*</button>*/}
+                                    <button
+                                        className={`px-3 py-1 rounded-lg ${selectedPeriod === 'Week' ? 'bg-blue-500 text-white' : 'bg-white'}`}
+                                        onClick={() => handleClick('Week')}
+                                    >
+                                        Week
+                                    </button>
+                                    <button
+                                        className={`px-3 py-1 rounded-lg ${selectedPeriod === 'Month' ? 'bg-blue-500 text-white' : 'bg-white'}`}
+                                        onClick={() => handleClick('Month')}
+                                    >
+                                        Month
+                                    </button>
+                                </div>
 
                             </div>
                             <div className="h-[300px]">

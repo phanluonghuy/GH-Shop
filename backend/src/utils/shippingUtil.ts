@@ -294,8 +294,9 @@ const zipCodes = [
         "name": "Huyện Hòa Vang",
         "city_id": "550000"
     }
-    
+
 ]
+
 // Function to get the zip code info based on the zip code
 export function getZipCodeInfo(zipCode: string) {
     const targetZip = parseInt(zipCode, 10);
@@ -306,7 +307,7 @@ export function getZipCodeInfo(zipCode: string) {
     for (const zip of zipCodes) {
         const currentZip = parseInt(zip.id, 10);
         const distance = Math.abs(currentZip - targetZip);
-        
+
         if (distance < closestDistance) {
             closestDistance = distance;
             closestZip = zip;
@@ -314,9 +315,9 @@ export function getZipCodeInfo(zipCode: string) {
     }
 
     // Trả về id và city_id của zip code gần nhất
-    return closestZip ? { id: closestZip.id, city_id: closestZip.city_id } : null;
+    return closestZip ? {id: closestZip.id, city_id: closestZip.city_id} : null;
 
-  }
-  
-  // Export the zip code data if needed elsewhere
-  export { zipCodes };
+}
+
+// Export the zip code data if needed elsewhere
+export {zipCodes};

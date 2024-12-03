@@ -1,8 +1,7 @@
 /* external imports */
-import mongoose, {Document, Schema, model, Types} from "mongoose";
+import mongoose, {Document, model, ObjectId, Schema, Types} from "mongoose";
 import bcrypt from "bcryptjs";
 import validator from "validator";
-import {ObjectId} from "mongoose";
 import {addressSchema, IAddress} from "./userAddressModel";
 
 /* create user schema interface */
@@ -28,13 +27,14 @@ interface IUser extends Document {
     address: IAddress[];
     createdAt: Date;
     updatedAt: Date;
+    loyaltyPoints: number;
 
     encryptedPassword(password: string): string;
 
     comparePassword(password: string, hash: string): boolean;
 
-    loyaltyPoints: number;
     earnPoints(orderValue: number): number;
+
     redeemPoints(points: number): number;
 }
 
@@ -281,7 +281,6 @@ userSchema.methods.redeemPoints = function (points: number): number {
     this.loyaltyPoints -= points;
     return discountValue;
 };
-
 
 
 /* create user model schema */

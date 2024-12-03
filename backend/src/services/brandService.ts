@@ -1,4 +1,4 @@
-import { Request, Response} from 'express';
+import {Request, Response} from 'express';
 import Brand from "../models/brandModel";
 import Product from "../models/productModel";
 import User from "../models/userModel";
@@ -10,7 +10,7 @@ interface CustomRequest extends Request {
 
 export const brandService = {
     addBrand: async (req: CustomRequest, res: Response): Promise<void> => {
-        const { body, file } = req;
+        const {body, file} = req;
 
         const brand = new Brand({
             title: body.title,
@@ -27,7 +27,7 @@ export const brandService = {
         const result = await brand.save();
 
         await User.findByIdAndUpdate(result.creator, {
-            $set: { brand: result._id },
+            $set: {brand: result._id},
         });
 
         res.status(201).json({
@@ -75,7 +75,7 @@ export const brandService = {
 
     updateBrand: async (req: CustomRequest, res: Response): Promise<void> => {
         const brand: any = await Brand.findById(req.params.id);
-           let updatedBrand = req.body;
+        let updatedBrand = req.body;
 
         if (!req.body.logo && req.file) {
             await remove(brand.logo.public_id);
@@ -102,9 +102,9 @@ export const brandService = {
         const brand: any = await Brand.findByIdAndDelete(req.params.id);
         await remove(brand.logo.public_id);
 
-        await Product.updateMany({ brand: req.params.id }, { $unset: { brand: "" } });
+        await Product.updateMany({brand: req.params.id}, {$unset: {brand: ""}});
         await User.findByIdAndUpdate(brand.creator, {
-            $unset: { brand: "" },
+            $unset: {brand: ""},
         });
 
         res.status(200).json({

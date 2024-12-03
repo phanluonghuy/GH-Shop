@@ -1,13 +1,12 @@
 "use client";
 
 import Spinner from "@/components/shared/Spinner";
-import { useChangePasswordTokenMutation } from "@/services/auth/authApi";
+import {useChangePasswordTokenMutation} from "@/services/auth/authApi";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { toast } from "react-hot-toast";
+import {useRouter, useSearchParams} from "next/navigation";
+import React, {useEffect, useState} from "react";
+import {toast} from "react-hot-toast";
 
 const ResetPassword = () => {
     const router = useRouter();
@@ -15,15 +14,15 @@ const ResetPassword = () => {
     const token = searchParams.get("resetToken");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [changePasswordToken, { isLoading, data, error }] = useChangePasswordTokenMutation();
+    const [changePasswordToken, {isLoading, data, error}] = useChangePasswordTokenMutation();
 
     useEffect(() => {
         if (isLoading) {
-            toast.loading("Resetting password...", { id: "forgot-password" });
+            toast.loading("Resetting password...", {id: "forgot-password"});
         }
 
         if (data) {
-            toast.success(data?.description, { id: "forgot-password" });
+            toast.success(data?.description, {id: "forgot-password"});
             setTimeout(() => {
                 window.open("/auth/signin", "_self");
             }, 1000);
@@ -32,9 +31,9 @@ const ResetPassword = () => {
             localStorage.setItem('resetToken', token);
         }
         if (error?.data) {
-            toast.error(error?.data?.description, { id: "forgot-password" });
+            toast.error(error?.data?.description, {id: "forgot-password"});
         }
-    }, [data, error, isLoading,token]);
+    }, [data, error, isLoading, token]);
 
     const handleResetPassword = async (e) => {
         e.preventDefault();
@@ -65,7 +64,7 @@ const ResetPassword = () => {
             return;
         }
 
-        changePasswordToken({ password });
+        changePasswordToken({password});
 
         // try {
         //     const response = await axios.patch('/api/user/reset-password-token',
@@ -87,7 +86,7 @@ const ResetPassword = () => {
         <section className="w-screen h-screen flex justify-center items-center px-4">
             <div className="max-w-md w-full flex flex-col gap-y-4 border p-8 rounded-primary">
                 <div className="flex flex-row items-center gap-x-2">
-                    <hr className="w-full" />
+                    <hr className="w-full"/>
                     <Image
                         src="/logo.png"
                         alt="logo"
@@ -96,7 +95,7 @@ const ResetPassword = () => {
                         className="max-w-full cursor-pointer"
                         onClick={() => router.push("/")}
                     />
-                    <hr className="w-full" />
+                    <hr className="w-full"/>
                 </div>
                 <form
                     className="w-full flex flex-col gap-y-4"
@@ -131,12 +130,12 @@ const ResetPassword = () => {
                         disabled={isLoading}
                         className="py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow disabled:bg-gray-200 disabled:border-gray-200 disabled:text-black/50 disabled:cursor-not-allowed flex flex-row justify-center items-center text-sm"
                     >
-                        {isLoading ? <Spinner /> : "Reset Password"}
+                        {isLoading ? <Spinner/> : "Reset Password"}
                     </button>
                 </form>
                 <div className="flex flex-row justify-center items-center gap-x-2 text-xs">
                     <Link href="/auth/signin">Sign In</Link>
-                    <span className="h-4 border-l" />
+                    <span className="h-4 border-l"/>
                     <Link href="/auth/signup">Sign Up</Link>
                 </div>
             </div>

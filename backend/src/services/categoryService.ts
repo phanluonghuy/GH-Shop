@@ -10,7 +10,7 @@ interface CustomRequest extends Request {
 
 export const categoryService = {
     addCategory: async (req: CustomRequest, res: Response): Promise<void> => {
-        const { body, file } = req;
+        const {body, file} = req;
 
         const category = new Category({
             title: body.title,
@@ -39,7 +39,7 @@ export const categoryService = {
         });
     },
 
-    getCategories: async ( res: Response): Promise<void> => {
+    getCategories: async (res: Response): Promise<void> => {
         const categories = await Category.find().populate([
             "creator",
             {
@@ -97,11 +97,11 @@ export const categoryService = {
         await remove(category.thumbnail.public_id);
 
         await Product.updateMany(
-            { category: req.params.id },
-            { $unset: { category: "" } }
+            {category: req.params.id},
+            {$unset: {category: ""}}
         );
         await User.findByIdAndUpdate(category.creator, {
-            $unset: { category: "" },
+            $unset: {category: ""},
         });
 
         res.status(200).json({

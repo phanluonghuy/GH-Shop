@@ -22,7 +22,7 @@ productRouter.patch('/update-product/:id', verify, authorize("admin", "seller"),
     {name: "gallery", maxCount: 5},
 ]), productController.updateProduct)
 
-productRouter.delete('/delete-product/:id',verify, authorize("admin", "seller"), productController.deleteProduct)
+productRouter.delete('/delete-product/:id', verify, authorize("admin", "seller"), productController.deleteProduct)
 
 productRouter.get('/filtered-products', productController.getFilteredProducts)
 

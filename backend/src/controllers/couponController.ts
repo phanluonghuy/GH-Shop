@@ -13,7 +13,7 @@ export const couponController = {
     },
     getCoupons: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await couponService.getCoupons(req,res);
+            await couponService.getCoupons(req, res);
         } catch (error) {
             next(error);
         } finally {
@@ -49,13 +49,12 @@ export const couponController = {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
     },
-    updateCoupon : async (req: Request, res: Response, next: NextFunction) => {
+    updateCoupon: async (req: Request, res: Response, next: NextFunction) => {
         try {
             await couponService.updateCoupon(req, res);
         } catch (error) {
             next(error);
-        }
-        finally {
+        } finally {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
     }

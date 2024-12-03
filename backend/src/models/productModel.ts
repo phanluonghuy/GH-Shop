@@ -1,5 +1,5 @@
 /* external imports */
-import mongoose, {Document, Schema, model} from "mongoose";
+import mongoose, {Document, model, Schema} from "mongoose";
 import validator from "validator";
 import Review from "./reviewModel";
 import Category from "./categoryModel";
