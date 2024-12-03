@@ -18,28 +18,36 @@ export const reviewService = {
         });
 
         if (!productExists) {
-            res.status(400).json({
-                acknowledgement: false,
-                message: "Bad Request",
-                description: "Purchase this to place a review",
+            const review = await Review.create({
+                reviewer: user._id,
+                product: product,
+                rating: 1,
+                comment: comment,
             });
-            return;
+
+            await Product.findByIdAndUpdate(product, {
+                $push: { reviews: review._id },
+            });
+
+            await User.findByIdAndUpdate(user._id, {
+                $push: { reviews: review._id },
+            });
+        } else {
+            const review = await Review.create({
+                reviewer: user._id,
+                product: product,
+                rating: rating,
+                comment: comment,
+            });
+
+            await Product.findByIdAndUpdate(product, {
+                $push: { reviews: review._id },
+            });
+
+            await User.findByIdAndUpdate(user._id, {
+                $push: { reviews: review._id },
+            });
         }
-
-        const review = await Review.create({
-            reviewer: user._id,
-            product: product,
-            rating: rating,
-            comment: comment,
-        });
-
-        await Product.findByIdAndUpdate(product, {
-            $push: { reviews: review._id },
-        });
-
-        await User.findByIdAndUpdate(user._id, {
-            $push: { reviews: review._id },
-        });
 
         res.status(201).json({
             acknowledgement: true,

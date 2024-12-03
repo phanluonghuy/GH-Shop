@@ -10,10 +10,29 @@ import ForgotPassword from "@/components/icons/ForgotPassword";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import { CgProfile } from "react-icons/cg";
-import {FiLogOut} from "react-icons/fi";
+
+import { FiLogOut } from "react-icons/fi";
+
+import { FaCrown, FaMedal, FaStar, FaGem, FaTrophy } from "react-icons/fa";
+
+const getRank = (loyaltyPoints) => {
+    if (loyaltyPoints >= 10000) {
+        return { rank: "Diamond", icon: <FaGem className="text-blue-500" /> };
+    } else if (loyaltyPoints >= 5000) {
+        return { rank: "Platinum", icon: <FaCrown className="text-gray-500" /> };
+    } else if (loyaltyPoints >= 2500) {
+        return { rank: "Gold", icon: <FaTrophy className="text-yellow-500" /> };
+    } else if (loyaltyPoints >= 1000) {
+        return { rank: "Silver", icon: <FaMedal className="text-gray-400" /> };
+    } else {
+        return { rank: "Bronze", icon: <FaStar className="text-orange-500" /> };
+    }
+};
+
 const Auth = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
+  const { rank, icon } = getRank(user.loyaltyPoints);
 
   return (
     <>
@@ -82,20 +101,26 @@ const Auth = () => {
                   <p className="text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                     {user?.email}
                   </p>
-                  <p className="flex flex-row gap-x-2 mt-1.5">
-                    <span className="px-2 border border-purple-900 text-purple-900 bg-purple-50 rounded-primary text-xs w-fit">
+                    <p className="flex flex-row gap-x-2 mt-1.5">
+                    <span
+                        className="px-2 border border-purple-900 text-purple-900 bg-purple-50 rounded-primary text-xs w-fit">
                       {user?.role}
                     </span>
-                    {user?.status === "inactive" && (
-                      <span className="bg-red-50 border border-red-900 px-2 rounded-secondary text-red-900 text-xs lowercase w-fit">
+                    <span className="flex items-center gap-x-1 text-xs">
+                            {icon} {rank} {user?.loyaltyPoints}
+                     </span>
+                        {user?.status === "inactive" && (
+                            <span
+                                className="bg-red-50 border border-red-900 px-2 rounded-secondary text-red-900 text-xs lowercase w-fit">
                         in review
                       </span>
-                    )}
-                  </p>
+                        )}
+                    </p>
                 </article>
               </div>
-              <hr />
-              <div className="w-full flex flex-row items-center gap-x-2 p-2 border border-transparent hover:border-black rounded cursor-pointer">
+                <hr/>
+                <div
+                    className="w-full flex flex-row items-center gap-x-2 p-2 border border-transparent hover:border-black rounded cursor-pointer">
                 <span className="bg-transparent p-1 rounded">
                 <CgProfile className="h-8 w-8" />
                 </span>
