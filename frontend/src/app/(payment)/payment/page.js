@@ -4,11 +4,7 @@ import Container from "@/components/shared/Container";
 import Main from "@/components/shared/layouts/Main";
 import Link from "next/link";
 import Image from 'next/image';
-import {
-    Accordion,
-    AccordionHeader,
-    AccordionBody,
-} from "@material-tailwind/react";
+import {Accordion, AccordionBody, AccordionHeader,} from "@material-tailwind/react";
 import {useGetCouponCodeQuery} from "@/services/coupon/couponApi";
 import {useGetShippingFeeQuery} from "@/services/shipping/shippingApi";
 import React, {useEffect, useState} from "react";
@@ -22,6 +18,7 @@ const Payment = () => {
     const [paymentStatus, setPaymentStatus] = useState('success');
     const [open, setOpen] = useState(0);
     const [promoCode, setPromoCode] = useState('');
+    const [point, setPoint] = useState('');
     const [code, setCode] = useState('');
     const [address, setAddress] = useState([]);
     const [shippingFee, setShippingFee] = useState(0);
@@ -30,7 +27,7 @@ const Payment = () => {
     const [name, setName] = useState(user?.name || '');
     // const [zipCode, setZipCode] = useState(user?.address[0]?.zipCode || 0);
     const [zipCode, setZipCode] = useState('');
-    const [selectedOptionIndex, setSelectedOptionIndex] = useState();
+    const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
     const [isEditing, setIsEditing] = useState(false);
     const [newAddress, setNewAddress] = useState({
         contactNumber: '',
@@ -67,6 +64,7 @@ const Payment = () => {
         error: fetchShippingFeeError
     } = useGetShippingFeeQuery(zipCode, {skip: !zipCode});
 
+
     const handleOpen = (value) => setOpen(open === value ? 0 : value);
 
     const calculateCartSummary = (total, tax, discount, shippingFee) => {
@@ -75,7 +73,21 @@ const Payment = () => {
 
     const handleApplyPromoCode = () => {
         setCode(promoCode);
+        if (point < 100) {
+            toast.error("Your point is not enough to use, must be greater than 100", {id: "point"});
+        }
+        if (point > user?.loyaltyPoints ?? false) {
+            toast.error("Your point is not enough to use", {id: "point"});
+        }
     };
+
+    function checkPoint(point) {
+        if (point < 100) {
+            return false;
+        }
+        return !(point > user?.loyaltyPoints ?? false);
+
+    }
 
     const handleEditClick = () => {
         if (!isEditing) {
@@ -84,7 +96,7 @@ const Payment = () => {
         } else {
             setAddress([newAddress])
         }
-        ;
+
         setIsEditing(!isEditing);
     }
 
@@ -96,6 +108,19 @@ const Payment = () => {
 
     const handleAddressSubmit = (e) => {
         e.preventDefault();
+
+        const {contactNumber, street, district, city, zipCode} = newAddress;
+        if (!contactNumber || !street || !district || !city || !zipCode) {
+            return toast.error('Please fill in all fields', {id: 'address'});
+        }
+        if (zipCode.length !== 6) {
+            return toast.error('Zip code must be 6 digits', {id: 'address'});
+        }
+        const zipCodePattern = /^(1\d{5}|7\d{5}|55\d{4})$/;
+        if (!zipCodePattern.test(zipCode)) {
+            return toast.error('Zip code is invalid, only support Ha Noi, HCM, DN with start 1xxxxx,7xxxxx,55xxxxx', {id: 'address'});
+        }
+
         setAddress([newAddress]);
         // Reset form and exit edit mode
         setNewAddress({
@@ -143,11 +168,11 @@ const Payment = () => {
             tax,
             discount,
             shippingFee,
-            sumary: calculateCartSummary(cartInfo.total, tax, discount, shippingFee),
+            sumary: calculateCartSummary(cartInfo.total, tax, discount, shippingFee) - point / 10,
         };
 
         setCartInfo(newCartInfo);
-    }, [shippingData, shippingFee, zipCode, code, fetchingApplyCoupon, fetchApplyCouponData, fetchApplyCouponError, fetchShippingFeeData, fetchShippingFeeError]);
+    }, [point, setSelectedAddressIndex, shippingData, shippingFee, zipCode, code, fetchingApplyCoupon, fetchApplyCouponData, fetchApplyCouponError, fetchShippingFeeData, fetchShippingFeeError]);
 
 
     return (
@@ -202,7 +227,7 @@ const Payment = () => {
                                                 value={selectedAddressIndex || ''}
                                                 onChange={(event) => handleAddressChange(event)}
                                             >
-                                                <option value="">Select an address</option>
+                                                <option value="0">Select an address</option>
                                                 {address.map((addr, index) => (
                                                     <option key={index} value={index}>
                                                         {addr.contactNumber}, {addr.street}, {addr.district}, {addr.city},{' '}
@@ -283,7 +308,7 @@ const Payment = () => {
                                         <p className="text-sm">Select Shipping</p>
                                         <div className="shipping-options">
                                             <div className="options-list">
-                                                {shippingData.data.length > 0 ? (
+                                                {shippingData.data.length > 0 && selectedAddressIndex !== 0 ? (
                                                     shippingData.data.map((option, index) => (
                                                         <div key={index}
                                                              className="option-card border p-4 rounded mb-4 flex items-center">
@@ -413,11 +438,26 @@ const Payment = () => {
                                                 <span>{cartInfo?.shippingFee}</span>
                                             </div>)
                                         }
+                                        {
+                                            checkPoint(point) > 0 && (<div className="flex justify-between">
+                                                <span className="text-gray-600">Using point</span>
+                                                <span>{(Number(point) || 0) / 10}</span>
+                                            </div>)
+                                        }
                                         <hr className="my-2"/>
                                         <div className="flex justify-between font-medium">
-                                            <span>Sum</span>
-                                            <span>{cartInfo?.sumary.toFixed(2)}</span>
+                                            <div className="flex justify-center items-center font-medium gap-x-4">
+                                                <span>Your point: {(user?.loyaltyPoints) ?? 0}</span>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                placeholder="Enter your point"
+                                                className="flex justify-center items-center w-1/2 p-2 border rounded-md"
+                                                value={point}
+                                                onChange={(e) => setPoint(e.target.value)}
+                                            />
                                         </div>
+
                                         <input
                                             type="text"
                                             placeholder="Enter promo code"
@@ -425,14 +465,29 @@ const Payment = () => {
                                             value={promoCode}
                                             onChange={(e) => setPromoCode(e.target.value)}
                                         />
+                                        <div className="flex justify-between font-medium">
+                                            <span>Sum</span>
+                                            <span>{cartInfo?.sumary.toFixed(2)}</span>
+                                        </div>
                                         <button
                                             className="w-full bg-gray-200 text-gray-800 py-2 rounded-md hover:bg-gray-300"
                                             onClick={handleApplyPromoCode}
                                         >
                                             Apply
                                         </button>
-                                        <Purchase cart={user.cart} address={address} phone={phone} name={name}
-                                                  coupon={code}/>
+                                        {selectedAddressIndex !== 0 ? (
+                                            <Purchase
+                                                cart={user.cart}
+                                                address={address[selectedAddressIndex]}
+                                                phone={phone}
+                                                name={name}
+                                                coupon={code}
+                                                point={point}
+                                            />
+                                        ) : (
+                                            <p className="text-red-500">Please select an address to proceed with the
+                                                purchase.</p>
+                                        )}
                                         <div className="text-center">
                                             <span className="text-sm text-gray-600">or</span>
                                             <Link href="/" className="block text-blue-600 hover:underline mt-2">
@@ -465,10 +520,9 @@ function Icon({id, open}) {
     );
 }
 
-function Purchase({cart, address, phone, name, coupon}) {
+function Purchase({cart, address, phone, name, coupon, point}) {
     const [createPayment, {isLoading, data, error}] =
         useCreatePaymentMutation();
-
     useEffect(() => {
         if (isLoading) {
             toast.loading("Creating payment...", {id: "createPayment"});
@@ -506,7 +560,7 @@ function Purchase({cart, address, phone, name, coupon}) {
             <button
                 type="button"
                 className="w-full  px-8 py-2 border border-black rounded-secondary bg-black hover:bg-black/90 text-white transition-colors drop-shadow flex flex-row gap-x-2 items-center justify-center"
-                onClick={() => createPayment({result, address, phone, name, coupon})}
+                onClick={() => createPayment({result, address, phone, name, coupon, point})}
             >
                 Purchase
             </button>

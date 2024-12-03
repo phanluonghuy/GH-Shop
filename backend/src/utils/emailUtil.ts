@@ -1,24 +1,25 @@
 // Import the Nodemailer library
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 // Create a transporter object
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // use SSL
-  auth: {
-    user: 'phanluonghuy4623@gmail.com',
-    pass: 'yeghfvikguvzcszi',
-  }
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // use SSL
+    auth: {
+        user: 'phanluonghuy4623@gmail.com',
+        pass: 'yeghfvikguvzcszi',
+    }
 });
 
 export async function sendEmail(resetCode: string, targetEmail: string): Promise<void> {
     try {
         const options = mailOptions(resetCode, targetEmail);
         await transporter.sendMail(options);
-        console.log('Email sent successfully');
+        // console.log('Email sent successfully');
     } catch (error) {
         console.error('Error sending email:', error);
     }
@@ -29,11 +30,11 @@ export default sendEmail;
 
 function mailOptions(resetToken: string, targetEmail: string): nodemailer.SendMailOptions {
     return {
-      from: 'phanluonghuy4623@gmail.com',
-      to: targetEmail,
-      subject: 'Reset your PH Shop account password',
-      text: `Your reset code is: ${resetToken}`,
-      html: `
+        from: 'phanluonghuy4623@gmail.com',
+        to: targetEmail,
+        subject: 'Reset your PH Shop account password',
+        text: `Your reset code is: ${resetToken}`,
+        html: `
 <!doctype html>
 <html lang="en-US">
 
@@ -105,4 +106,4 @@ function mailOptions(resetToken: string, targetEmail: string): nodemailer.SendMa
 
 </html>`
     };
-  }
+}

@@ -11,7 +11,7 @@ interface CustomRequest extends Request {
 
 export const storeService = {
     addStore: async (req: CustomRequest, res: Response): Promise<void> => {
-        const { body, file } = req;
+        const {body, file} = req;
 
         const store = new Store({
             title: body.title,
@@ -28,7 +28,7 @@ export const storeService = {
         const result = await store.save();
 
         await User.findByIdAndUpdate(result.owner, {
-            $set: { store: result._id },
+            $set: {store: result._id},
         });
 
         res.status(201).json({
@@ -38,7 +38,7 @@ export const storeService = {
         });
     },
 
-    getStores: async ( res: Response): Promise<void> => {
+    getStores: async (res: Response): Promise<void> => {
         const stores = await Store.find().populate([
             "owner",
             {
@@ -91,13 +91,13 @@ export const storeService = {
         });
     },
 
-    deleteStore : async (req: CustomRequest, res: Response): Promise<void> => {
+    deleteStore: async (req: CustomRequest, res: Response): Promise<void> => {
         const store: any = await Store.findByIdAndDelete(req.params.id);
         await remove(store.thumbnail.public_id);
 
-        await Product.updateMany({ store: req.params.id }, { $unset: { store: "" } });
+        await Product.updateMany({store: req.params.id}, {$unset: {store: ""}});
         await User.findByIdAndUpdate(store.owner, {
-            $unset: { store: "" },
+            $unset: {store: ""},
         });
 
         res.status(200).json({

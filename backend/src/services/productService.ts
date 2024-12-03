@@ -1,4 +1,4 @@
-import { Request, Response} from 'express';
+import {Request, Response} from 'express';
 import Product from '../models/productModel';
 import Category from '../models/categoryModel';
 import Store from '../models/storeModel';
@@ -9,7 +9,7 @@ import User from '../models/userModel';
 
 export const productService = {
     addProduct: async (req: Request, res: Response): Promise<void> => {
-        const { features, campaign, variations, ...otherInformation } = req.body;
+        const {features, campaign, variations, ...otherInformation} = req.body;
         let thumbnail = null;
         let gallery = [];
         let files: any = req.files
@@ -47,13 +47,13 @@ export const productService = {
 
         // add product id to category, brand and store
         await Category.findByIdAndUpdate(product.category, {
-            $push: { products: product._id },
+            $push: {products: product._id},
         });
         await Brand.findByIdAndUpdate(product.brand, {
-            $push: { products: product._id },
+            $push: {products: product._id},
         });
         await Store.findByIdAndUpdate(product.store, {
-            $push: { products: product._id },
+            $push: {products: product._id},
         });
 
         res.status(201).json({
@@ -70,7 +70,7 @@ export const productService = {
             "store",
             {
                 path: "reviews",
-                options: { sort: { updatedAt: -1 } },
+                options: {sort: {updatedAt: -1}},
                 populate: [
                     "reviewer",
                     {
@@ -97,7 +97,7 @@ export const productService = {
             "store",
             {
                 path: "reviews",
-                options: { sort: { updatedAt: -1 } },
+                options: {sort: {updatedAt: -1}},
                 populate: [
                     "reviewer",
                     {
@@ -149,7 +149,7 @@ export const productService = {
         updatedProduct.campaign = JSON.parse(req.body.campaign);
         updatedProduct.variations = JSON.parse(req.body.variations);
 
-        await Product.findByIdAndUpdate(req.params.id, { $set: updatedProduct });
+        await Product.findByIdAndUpdate(req.params.id, {$set: updatedProduct});
 
         res.status(200).json({
             acknowledgement: true,
@@ -174,26 +174,26 @@ export const productService = {
 
         // also delete from category, brand & store
         await Category.findByIdAndUpdate(product.category, {
-            $pull: { products: product._id },
+            $pull: {products: product._id},
         });
         await Brand.findByIdAndUpdate(product.brand, {
-            $pull: { products: product._id },
+            $pull: {products: product._id},
         });
         await Store.findByIdAndUpdate(product.store, {
-            $pull: { products: product._id },
+            $pull: {products: product._id},
         });
 
         // delete this product from users products array
         await User.updateMany(
-            { products: product._id },
-            { $pull: { products: product._id } }
+            {products: product._id},
+            {$pull: {products: product._id}}
         );
 
         // delete reviews that belong to this product also remove those reviews from users reviews array
-        await Review.deleteMany({ product: product._id });
+        await Review.deleteMany({product: product._id});
         await User.updateMany(
-            { reviews: { $in: product.reviews } },
-            { $pull: { reviews: { $in: product.reviews } } }
+            {reviews: {$in: product.reviews}},
+            {$pull: {reviews: {$in: product.reviews}}}
         );
 
         res.status(200).json({
@@ -231,7 +231,7 @@ export const productService = {
                 description: "Filtered products fetched successfully",
                 data: products,
             });
-        } catch (error : any) {
+        } catch (error: any) {
             console.error(error);
             res.status(500).json({
                 acknowledgement: false,
@@ -244,12 +244,12 @@ export const productService = {
 
     /* Restock inventory */
     restockProduct: async (req: Request, res: Response): Promise<void> => {
-        const { id } = req.params;
-        const { variations } = req.body;
+        const {id} = req.params;
+        const {variations} = req.body;
 
         try {
             const product: any = await Product.findById(id);
-            if (!product) res.status(404).json({ message: "Product not found" });
+            if (!product) res.status(404).json({message: "Product not found"});
 
             // Update stock for the specified variations
             for (const variation of variations) {
@@ -286,12 +286,12 @@ export const productService = {
 
     /* Reduce stock after sale */
     sellProduct: async (req: Request, res: Response): Promise<void> => {
-        const { id } = req.params;
-        const { variations } = req.body;
+        const {id} = req.params;
+        const {variations} = req.body;
 
         try {
             const product: any = await Product.findById(id);
-            if (!product) res.status(404).json({ message: "Product not found" });
+            if (!product) res.status(404).json({message: "Product not found"});
 
             // Update stock for the specified variations
             for (const variation of variations) {
@@ -308,7 +308,7 @@ export const productService = {
                         });
                     }
                 } else {
-                        res.status(400).json({
+                    res.status(400).json({
                         acknowledgement: false,
                         message: "Variant not found",
                         description: `Variant with color: ${variation.color}, size: ${variation.size} not found`,
@@ -339,11 +339,11 @@ export const productService = {
 
     /* Get stock details */
     getStockDetails: async (req: Request, res: Response): Promise<void> => {
-        const { id } = req.params;
+        const {id} = req.params;
 
         try {
             const product: any = await Product.findById(id);
-            if (!product) res.status(404).json({ message: "Product not found" });
+            if (!product) res.status(404).json({message: "Product not found"});
 
             res.status(200).json({
                 acknowledgement: true,

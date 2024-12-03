@@ -1,6 +1,4 @@
-
-
-const { canimApi } = require("../canim");
+const {canimApi} = require("../canim");
 
 const shippingApi = canimApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -11,7 +9,7 @@ const shippingApi = canimApi.injectEndpoints({
                 method: "GET",
             }),
 
-            providesTags: ["Shipping","ZipCode"],
+            providesTags: ["Shipping", "ZipCode"],
         }),
     }),
 });

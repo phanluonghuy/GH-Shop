@@ -1,35 +1,33 @@
-
-
-const { canimApi } = require("../canim");
+const {canimApi} = require("../canim");
 
 const purchaseApi = canimApi.injectEndpoints({
-  endpoints: (build) => ({
-    getAllPurchases: build.query({
-      query: () => ({
-        url: "/purchase/get-all-purchases",
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      }),
+    endpoints: (build) => ({
+        getAllPurchases: build.query({
+            query: () => ({
+                url: "/purchase/get-all-purchases",
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            }),
 
-      providesTags: ["Purchase"],
+            providesTags: ["Purchase"],
+        }),
+
+        updatePurchaseStatus: build.mutation({
+            query: ({id, body}) => ({
+                url: `/purchase/update-purchase-status/${id}`,
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+                body,
+            }),
+
+            invalidatesTags: ["Purchase", "User"],
+        }),
     }),
-
-    updatePurchaseStatus: build.mutation({
-      query: ({ id, body }) => ({
-        url: `/purchase/update-purchase-status/${id}`,
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body,
-      }),
-
-      invalidatesTags: ["Purchase", "User"],
-    }),
-  }),
 });
 
-export const { useGetAllPurchasesQuery, useUpdatePurchaseStatusMutation } =
-  purchaseApi;
+export const {useGetAllPurchasesQuery, useUpdatePurchaseStatusMutation} =
+    purchaseApi;

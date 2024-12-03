@@ -1,24 +1,22 @@
-
-
-import { createSlice } from "@reduxjs/toolkit";
+import {createSlice} from "@reduxjs/toolkit";
 
 const initialState = {
-  brands: [],
-  brand: {},
+    brands: [],
+    brand: {},
 };
 
 const brandSlice = createSlice({
-  name: "brand",
-  initialState,
-  reducers: {
-    setBrands: (state, action) => {
-      state.brands = action.payload;
+    name: "brand",
+    initialState,
+    reducers: {
+        setBrands: (state, action) => {
+            state.brands = action.payload;
+        },
+        setBrand: (state, action) => {
+            state.brand = action.payload;
+        },
     },
-    setBrand: (state, action) => {
-      state.brand = action.payload;
-    },
-  },
 });
 
-export const { setBrands, setBrand } = brandSlice.actions;
+export const {setBrands, setBrand} = brandSlice.actions;
 export default brandSlice.reducer;

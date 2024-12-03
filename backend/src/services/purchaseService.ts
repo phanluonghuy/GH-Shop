@@ -1,4 +1,4 @@
-import { Request, Response} from 'express';
+import {Request, Response} from 'express';
 import Purchase from "../models/purchaseModel";
 
 export const purchaseService = {

@@ -1,4 +1,4 @@
-const { canimApi } = require("../canim");
+const {canimApi} = require("../canim");
 
 const dashboardApi = canimApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -12,7 +12,7 @@ const dashboardApi = canimApi.injectEndpoints({
                 },
             }),
 
-            providesTags: ["Dashboard","Purchases"],
+            providesTags: ["Dashboard", "Purchases"],
         }),
         getRevenue: builder.query({
             query: (period) => ({
@@ -23,7 +23,7 @@ const dashboardApi = canimApi.injectEndpoints({
                 },
             }),
 
-            providesTags: ["Dashboard","Period"],
+            providesTags: ["Dashboard", "Period"],
         }),
 
     }),

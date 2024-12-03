@@ -1,4 +1,4 @@
-import { Request, Response} from 'express';
+import {Request, Response} from 'express';
 import Favorite from "../models/favoriteModel";
 import User from "../models/userModel";
 
@@ -7,9 +7,9 @@ interface CustomRequest extends Request {
 }
 
 export const favoriteService = {
-    addToFavorite : async (req: CustomRequest, res: Response): Promise<void> => {
+    addToFavorite: async (req: CustomRequest, res: Response): Promise<void> => {
         const user: any = await User.findById(req.user._id);
-        const { product } = req.body;
+        const {product} = req.body;
 
         const favorite = await Favorite.create({
             user: user._id,
@@ -17,7 +17,7 @@ export const favoriteService = {
         });
 
         await User.findByIdAndUpdate(user._id, {
-            $push: { favorites: favorite._id },
+            $push: {favorites: favorite._id},
         });
 
         res.status(201).json({
@@ -42,7 +42,7 @@ export const favoriteService = {
         const favorite: any = await Favorite.findByIdAndDelete(req.params.id);
 
         await User.findByIdAndUpdate(favorite.user, {
-            $pull: { favorites: favorite._id },
+            $pull: {favorites: favorite._id},
         });
 
         res.status(200).json({

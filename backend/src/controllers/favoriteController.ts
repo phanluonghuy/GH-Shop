@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {favoriteService} from "../services/favoriteService";
 
 export const favoriteController = {
-    addToFavorite : async (req: Request, res: Response, next: NextFunction) => {
+    addToFavorite: async (req: Request, res: Response, next: NextFunction) => {
         try {
             await favoriteService.addToFavorite(req, res);
         } catch (error) {
@@ -12,7 +12,7 @@ export const favoriteController = {
         }
     },
 
-    getFavorites : async (req: Request, res: Response, next: NextFunction) => {
+    getFavorites: async (req: Request, res: Response, next: NextFunction) => {
         try {
             await favoriteService.getFavorites(res);
         } catch (error) {
