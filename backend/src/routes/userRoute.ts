@@ -44,13 +44,13 @@ userRouter.get(
             role: user.role,
             status: user.status,
         });
-        res.cookie('token', tokenAccess,
-            //     {
-            //     maxAge : 10000,
-            //     secure: true
-            // }
-        );// Set the token in a cookie
-        res.redirect(`${process.env.ORIGIN_URL}/`);// Redirect to the client URL
+        // res.cookie('token', tokenAccess,
+        //     //     {
+        //     //     maxAge : 10000,
+        //     //     secure: true
+        //     // }
+        // );// Set the token in a cookie
+        res.redirect(`${process.env.ORIGIN_URL}/?tokenAccess=${tokenAccess}`);
     }
 );
 

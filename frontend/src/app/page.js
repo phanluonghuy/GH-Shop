@@ -10,28 +10,42 @@ import Main from "@/components/shared/layouts/Main";
 import {useEffect, useState} from "react";
 
 export default function Home() {
-    const [token, setToken] = useState(null);
-    const deleteCookie = (name) => {
-        document.cookie = `${name}=; max-age=0; path=/`;  // Set cookie with max-age 0 to delete it
+    // const [token, setToken] = useState(null);
+    // const deleteCookie = (name) => {
+    //     document.cookie = `${name}=; max-age=0; path=/`;  // Set cookie with max-age 0 to delete it
+    // };
+    // // Function to extract a specific cookie by its name
+    // const getCookie = (name) => {
+    //     const value = `; ${document.cookie}`;
+    //     const parts = value.split(`; ${name}=`);
+    //     if (parts.length === 2) return parts.pop()?.split(';').shift();
+    //     return null;
+    // };
+    // useEffect(() => {
+    //     const getTokenFromCookie = () => {
+    //         setToken(getCookie('token')); // Assuming your cookie name is 'auth_token'
+    //         if (token) {
+    //             localStorage.setItem("accessToken", token);
+    //             deleteCookie('token');
+    //             window.location.reload();
+    //         }
+    //     };
+    //     getTokenFromCookie();
+    // }, [token]);
+
+    const getQueryParam = (name) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);  // Return the value of the parameter
     };
-    // Function to extract a specific cookie by its name
-    const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop()?.split(';').shift();
-        return null;
-    };
+
+    // Get the 'tokenAccess' parameter from the URL
+     const tokenAccess = getQueryParam('tokenAccess');
     useEffect(() => {
-        const getTokenFromCookie = () => {
-            setToken(getCookie('token')); // Assuming your cookie name is 'auth_token'
-            if (token) {
-                localStorage.setItem("accessToken", token);
-                deleteCookie('token');
-                window.location.reload();
-            }
-        };
-        getTokenFromCookie();
-    }, [token]);
+        if (tokenAccess) {
+            localStorage.setItem("accessToken", tokenAccess);
+            window.location.href = '/';
+        }
+    }  , [ tokenAccess]);
 
     return (
         <>
