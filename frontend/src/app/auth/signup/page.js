@@ -71,11 +71,11 @@ const Signup = () => {
         }
 
         // Phone number validation regex
-        const phoneRegex = /^\+84\d{8,9}$/;
+        const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
 
         if (!e.target.phone.value.match(phoneRegex)) {
             alert(
-                "Phone number must start with +84 and have 9 or 10 digits"
+                "Phone number must start with 84 or 0 and have 9 or 10 digits"
             );
             return;
         }
