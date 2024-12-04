@@ -5,10 +5,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - 3000:3000
+      #ports:
+    # - 3000:3000
     environment:
-      - NEXT_PUBLIC_BASE_URL=http://gh-shop-backend:8080/api
+      - NEXT_PUBLIC_BASE_URL=https://api.toangtv.live/api
     networks:
       - gh-shop
     depends_on:
@@ -20,12 +20,12 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - 8080:8080
+      #ports:
+    # - 8080:8080
     environment:
-      - SERVER_URL=http://localhost
+      - SERVER_URL=https://api.toangtv.live
       - PORT=8080
-      - ORIGIN_URL=http://localhost:3000
+      - ORIGIN_URL=https://toangtv.live
       - MONGO_URI=mongodb+srv://doadmin:2XL8sulB61k07d49@db-mongodb-sgp1-88647-d9c7186e.mongo.ondigitalocean.com/test?tls=true&authSource=admin&replicaSet=db-mongodb-sgp1-88647
       - TOKEN_SECRET=150131091ad22d4e4acecd1340fef3d6cef0477a3745520756e19c9f2021f37f18bb45aa135049ee36d4ad7439dc8cad72d928c95332c6b8da59c56521d85a56
       - CLOUD_NAME=deynivwng
@@ -38,14 +38,18 @@ services:
       - GOOGLE_CLIENT_SECRET=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
     networks:
       - gh-shop
-  nginx:
-    container_name: gh-shop-nginx
-    image: nginx:1.27.3-alpine
+  nginx-proxy-manager:
+    container_name: gh-shop-nginx-proxy-manager
+    image: jc21/nginx-proxy-manager:latest
     restart: unless-stopped
     ports:
       - 80:80
+      - 443:443
+      - 81:81
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      # - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
     depends_on:
       - frontend
       - backend

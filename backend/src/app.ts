@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import session from "express-session";
 import cors from "cors";
 import error from "./middleware/errorMiddleware";
+import os from 'os';
 
 // routers
 import userRouter from "./routes/userRoute";
@@ -79,5 +80,8 @@ mongoose
     });
 
 app.get("/", (req, res) => {
-    res.send("Hello World");
+    const serverId = os.hostname();
+    const serverIp = req.ip;
+    const networkInterfaces = os.networkInterfaces();
+    res.send(`Hello World from server ${serverId} with IP ${serverIp} \n and network interfaces ${JSON.stringify(networkInterfaces)}`);
 });
