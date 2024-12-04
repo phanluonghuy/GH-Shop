@@ -75,7 +75,7 @@ const Signup = () => {
 
         if (!e.target.phone.value.match(phoneRegex)) {
             alert(
-                "Phone number must start with 84 or 0 and have 9 or 10 digits"
+                "Phone number must start with 0 and have 9 or 10 digits"
             );
             return;
         }
