@@ -33,19 +33,28 @@ export default function Home() {
     //     getTokenFromCookie();
     // }, [token]);
 
-    const getQueryParam = (name) => {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);  // Return the value of the parameter
-    };
+    const [tokenAccess, setTokenAccess] = useState(null);
 
-    // Get the 'tokenAccess' parameter from the URL
-     const tokenAccess = getQueryParam('tokenAccess');
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const getQueryParam = (name) => {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(name);  // Return the value of the parameter
+            };
+
+            const token = getQueryParam('tokenAccess');
+            if (token) {
+                setTokenAccess(token);
+            }
+        }
+    }, []);
+
     useEffect(() => {
         if (tokenAccess) {
             localStorage.setItem("accessToken", tokenAccess);
             window.location.href = '/';
         }
-    }  , [ tokenAccess]);
+    }, [tokenAccess]);
 
     return (
         <>
