@@ -79,9 +79,13 @@ mongoose
         console.error("Error connecting to MongoDB:", err);
     });
 
-app.get("/", (req, res) => {
+app.get("/api/test", (req, res) => {
     const serverId = os.hostname();
     const serverIp = req.ip;
     const networkInterfaces = os.networkInterfaces();
-    res.send(`Hello World from server ${serverId} with IP ${serverIp} \n and network interfaces ${JSON.stringify(networkInterfaces)}`);
+    res.status(200).json({
+        acknowledgement: true,
+        message: "Success",
+        description: `Hello World from server ${serverId} with IP ${serverIp} \n and network interfaces ${JSON.stringify(networkInterfaces)}`,
+    });
 });
